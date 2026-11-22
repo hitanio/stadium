@@ -218,7 +218,22 @@ function showTransfer(){overlay(`<h3 style="margin:0">データ引き継ぎ</h3>
  <div style="display:flex;gap:8px;justify-content:center;margin-top:8px"><button class="btn" onclick="importTransfer()">② 読み込む</button><button class="btn" onclick="parentMenu()">もどる</button></div>`)}
 function copyTransfer(){const d={v:1,at:Date.now()};TKEYS.forEach(k=>{const v=localStorage.getItem(k);if(v!=null)d[k]=v});const code='WCS1:'+btoa(unescape(encodeURIComponent(JSON.stringify(d))));
  try{navigator.clipboard.writeText(code).then(()=>tMsg.textContent='コピーしました。新しいアプリに貼り付けてください',()=>{tIn.value=code;tMsg.textContent='自動コピーできないので、下のコードを全部選んでコピーしてください'})}catch(e){tIn.value=code;tMsg.textContent='下のコードを全部選んでコピーしてください'}}
-function importTransfer(){try{const c=tIn.value.trim();if(!c.startsWith('WCS1:'))throw 0;const d=JSON.parse(decodeURIComponent(escape(atob(c.slice(5)))));TKEYS.forEach(k=>{if(d[k]!=null)localStorage.setItem(k,d[k])});render();renderHW();overlay(`<div style="font-size:40px">✅</div><h3>引き継ぎ完了！</h3><p class="mut">これまでの記録を読み込みました。</p><button class="btn pri" onclick="closeOver()">OK</button>`)}catch(e){tMsg.textContent='コードが正しくありません。もう一度コピーしてください'}}
+function parseTransfer(raw){
+  const s=String(raw||'').replace(/[\s​-‍﻿]+/g,'');
+  const parts=s.split('WCS1:').filter(Boolean);
+  for(const p of parts.reverse()){
+    const b=p.replace(/-/g,'+').replace(/_/g,'/').replace(/[^A-Za-z0-9+/]/g,'');
+    const pad=b+'='.repeat((4-b.length%4)%4);
+    try{const d=JSON.parse(decodeURIComponent(escape(atob(pad))));if(d&&typeof d==='object'&&(d.calcWC_v1||d.kotobaWC_v1||d.eigoWC_v1||d.wcHub_v1))return d}catch(e){}
+  }
+  return null;
+}
+function importTransfer(){
+  const raw=tIn.value,d=parseTransfer(raw);
+  if(!d){tMsg.textContent=`コードを読めませんでした（${raw.replace(/\s+/g,'').length}文字）。コピーをやり直して、欄を空にしてから1回だけ貼り付けてください`;return}
+  TKEYS.forEach(k=>{if(d[k]!=null)localStorage.setItem(k,d[k])});render();renderHW();
+  overlay(`<div style="font-size:40px">✅</div><h3>引き継ぎ完了！</h3><p class="mut">これまでの記録を読み込みました。</p><button class="btn pri" onclick="closeOver()">OK</button>`);
+}
 function copyLog(){const L=get('wcLog_v1')||[];const head='日時,教科,ステージ,第何戦,相手,相手順位,レベル,実効レベル,得点,失点,正誤,秒数,まちがい';const csv=[head].concat(L.map(e=>[e.at,e.app,e.stageName,e.leg,e.opp,e.orank,e.lv,e.eff,e.my,e.op,e.res,(e.secs||[]).join(' '),(e.missed||[]).join(' / ')].map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(','))).join('\n');
   try{navigator.clipboard.writeText(csv).then(()=>cpMsg.textContent='コピーしました',()=>cpMsg.textContent='コピーできませんでした')}catch(e){cpMsg.textContent='コピーできませんでした'}}
 function toggleLock(){const h=getHub();h.lockOn=h.lockOn===false?true:false;putHub(h);renderHW();parentMenu()}
