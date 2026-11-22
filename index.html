@@ -220,7 +220,7 @@ function copyTransfer(){const d={v:1,at:Date.now()};TKEYS.forEach(k=>{const v=lo
  try{navigator.clipboard.writeText(code).then(()=>tMsg.textContent='コピーしました。新しいアプリに貼り付けてください',()=>{tIn.value=code;tMsg.textContent='自動コピーできないので、下のコードを全部選んでコピーしてください'})}catch(e){tIn.value=code;tMsg.textContent='下のコードを全部選んでコピーしてください'}}
 function parseTransfer(raw){
   const s=String(raw||'').replace(/[\s​-‍﻿]+/g,'');
-  const parts=s.split('WCS1:').filter(Boolean);
+  const parts=s.split(/WCS1:/i).filter(Boolean);
   for(const p of parts.reverse()){
     const b=p.replace(/-/g,'+').replace(/_/g,'/').replace(/[^A-Za-z0-9+/]/g,'');
     const pad=b+'='.repeat((4-b.length%4)%4);
@@ -230,6 +230,7 @@ function parseTransfer(raw){
 }
 function importTransfer(){
   const raw=tIn.value,d=parseTransfer(raw);
+  if(d&&!(d.calcWC_v1||d.kotobaWC_v1||d.eigoWC_v1)){tMsg.textContent='このコードにはゲームの記録が入っていません。記録が残っている画面（claude.ai版）でコピーし直してください';return}
   if(!d){tMsg.textContent=`コードを読めませんでした（${raw.replace(/\s+/g,'').length}文字）。コピーをやり直して、欄を空にしてから1回だけ貼り付けてください`;return}
   TKEYS.forEach(k=>{if(d[k]!=null)localStorage.setItem(k,d[k])});render();renderHW();
   overlay(`<div style="font-size:40px">✅</div><h3>引き継ぎ完了！</h3><p class="mut">これまでの記録を読み込みました。</p><button class="btn pri" onclick="closeOver()">OK</button>`);
