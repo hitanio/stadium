@@ -57,8 +57,8 @@ h1 small{display:block;font-size:12px;color:#9fb0cc;font-weight:500;margin-top:2
 .goalL,.goalR{position:absolute;top:8px;bottom:8px;width:6px;background:#fff}
 .goalL{left:0}.goalR{right:0}
 .ball{position:absolute;top:50%;left:50%;font-size:20px;transform:translate(-50%,-50%);transition:left .6s cubic-bezier(.3,.8,.4,1)}
-.dots{display:flex;gap:5px;justify-content:center;margin-top:8px}
-.dots i{width:9px;height:9px;border-radius:50%;background:#2a3a58}
+.dots{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:8px}
+.dots i{width:8px;height:8px;border-radius:50%;background:#2a3a58}
 .dots i.ok{background:#3ddc84}.dots i.ng{background:var(--red)}.dots i.now{background:#fff}
 .timer{height:8px;background:#2a3a58;border-radius:4px;margin-top:10px;overflow:hidden}
 .timer div{height:100%;background:var(--gold);width:100%}
@@ -218,9 +218,9 @@ const TEAMS=[
 ["チリ","🇨🇱",1456.40]
 ].map(([name,flag,pts])=>({name,flag,pts}));
 const START_PTS=1440, K=25, DAILY=3;
-const DEF_CREST={c1:'#1d4ed8',c2:'#ffffff',txt:'AFC'};
+const DEF_CREST={c1:'#e4007f',c2:'#ffffff',txt:'TM'};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function sharedCrest(){try{const k=JSON.parse(localStorage.getItem('kotobaWC_v1'));if(k&&k.crest)return k.crest}catch(e){}return DEF_CREST}
+function sharedCrest(){try{const k=JSON.parse(localStorage.getItem('kotobaWC_v1'));if(k&&k.crest&&!(k.crest.txt==='AFC'&&k.crest.c1==='#1d4ed8'))return k.crest}catch(e){}return DEF_CREST}
 function crest(sz=40,c){c=c||sharedCrest();const t=esc(c.txt||'');const fs=[...(c.txt||'')].length>=3?10:13;
  return `<svg width="${sz}" height="${Math.round(sz*1.15)}" viewBox="0 0 40 46" aria-hidden="true"><path d="M4 3h32v20c0 11-7 18-16 21C11 41 4 34 4 23z" fill="${c.c1}" stroke="#0005" stroke-width="2.5"/><path d="M4 3h32v20c0 11-7 18-16 21C11 41 4 34 4 23z" fill="none" stroke="${c.c2}" stroke-width="1.2"/><path d="M8 7h24v16c0 8-5 13.5-12 16-7-2.5-12-8-12-16z" fill="none" stroke="${c.c2}" stroke-width="1.2"/><text x="20" y="26.5" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="${fs}" fill="${c.c2}">${t}</text></svg>`}
 const crestInline=sz=>`<span class="crest" style="display:inline-block;vertical-align:middle">${crest(sz)}</span>`;
@@ -299,7 +299,7 @@ function wordify(q){
 
 /* ===== セーブ ===== */
 let S;
-function load(){try{S=JSON.parse(localStorage.getItem('calcWC_v1'))}catch(e){}if(!S||typeof S.pts!=='number')S={name:'あざみ野FC',pts:START_PTS,cleared:{},best:{},slow:false,lv:3};if(S.name==='サムライキッズ'||S.name==='ヤマルキッズ')S.name='あざみ野FC';if(!S.lv)S.lv=3;S.legs=S.legs||{};S.weak=S.weak||[];if(!S.seed35){if(S.pts<1535)S.pts=1535;for(let i=0;i<4;i++)S.cleared[i]=true;S.seed35=true;try{localStorage.setItem('calcWC_v1',JSON.stringify(S))}catch(e){}}S.daily=S.daily||{date:'',n:0};S.streak=S.streak||{last:'',n:0}}
+function load(){try{S=JSON.parse(localStorage.getItem('calcWC_v1'))}catch(e){}if(!S||typeof S.pts!=='number')S={name:'テゲバジャーロ宮崎',pts:START_PTS,cleared:{},best:{},slow:false,lv:3};if(S.name==='サムライキッズ'||S.name==='ヤマルキッズ')S.name='テゲバジャーロ宮崎';if(!S.lv)S.lv=3;S.legs=S.legs||{};S.weak=S.weak||[];if(!S.seed35){if(S.pts<1535)S.pts=1535;for(let i=0;i<4;i++)S.cleared[i]=true;S.seed35=true;try{localStorage.setItem('calcWC_v1',JSON.stringify(S))}catch(e){}}S.daily=S.daily||{date:'',n:0};S.streak=S.streak||{last:'',n:0}}
 const dstr=d=>`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
 const today=()=>dstr(new Date());
 const yesterday=()=>{const d=new Date();d.setDate(d.getDate()-1);return dstr(d)};
@@ -372,7 +372,7 @@ function renderHome(){
   });
   stages.innerHTML=h;
 }
-tname.addEventListener('change',()=>{S.name=tname.value.trim()||'あざみ野FC';save()});
+tname.addEventListener('change',()=>{S.name=tname.value.trim()||'テゲバジャーロ宮崎';save()});
 slow.addEventListener('change',()=>{S.slow=slow.checked;save();renderHome()});
 function resetAll(){overlay(`<h3>さいしょからやり直す？</h3><p class="mut">ランキングとクリア記録が消えます。</p><div class="row" style="justify-content:center"><button class="btn" onclick="closeOver()">やめる</button><button class="btn pri" onclick="doReset()">やり直す</button></div>`)}
 function doReset(){S={name:S.name,pts:START_PTS,cleared:{},best:{},slow:S.slow,lv:3,legs:{},daily:{date:'',n:0},streak:S.streak};save();closeOver();renderHome()}
@@ -393,10 +393,10 @@ function startMatch(si){
   if(usedToday()>=DAILY){overlay(`<h3>今日は${DAILY}ステージ突破！</h3><p class="mut">おつかれさま。選手たちは休養中。また明日キックオフしよう⚽</p><button class="btn pri" onclick="closeOver()">OK</button>`);return}
   const lg=S.legs[si],leg=lg?2:1;
   const opp=(lg&&TEAMS.find(t=>t.name===lg.opp))||oppFor(S.pts);
-  M={si,opp,leg,a0:lg?{my:lg.my,op:lg.op}:{my:0,op:0},orank:realRank(opp),i:0,my:0,op:0,res:[],missed:[],phase:'reg',pkI:0,pkMy:0,ht:false,locked:true,ratios:[],times:[],tos:0,wpIdx:R(1,9)};crestMatch.innerHTML=crest(28);
+  M={si,opp,leg,a0:lg?{my:lg.my,op:lg.op}:{my:0,op:0},orank:realRank(opp),i:0,my:0,op:0,res:[],missed:[],phase:'reg',pkI:0,pkMy:0,ht:false,locked:true,ratios:[],times:[],tos:0,wpIdx:R(1,19)};crestMatch.innerHTML=crest(28);
   mMy.textContent=S.name;mOp.textContent=opp.name;mOpF.textContent=opp.flag;sMy.textContent=0;sOp.textContent=0;comm.textContent='';
   ball.style.left='50%';show('match');
-  overlay(`<div style="font-size:44px">${crestInline(44)} vs ${opp.flag}</div><h3 style="margin:6px 0">${S.name} vs ${opp.name}</h3><p class="mut">ステージ${si+1}「${STAGES[si].name}」<br>FIFAランク${M.orank}位 ${starsOf(M.orank)}<br>レベル ${effLv()}：${LV_NAME[effLv()-1]}${oppBoost(M.orank)?`（強豪国でむずかしさ+${oppBoost(M.orank)}）`:''}　全10問（前半5・後半5）<br>${leg===1?'第1戦（ホーム）':`第2戦（アウェイ）・第1戦は ${M.a0.my}-${M.a0.op}`}<br>正解＝ゴール、まちがい＝失点！時間はたっぷり、じっくり考えよう</p><button class="btn pri" onclick="kickoff()">キックオフ！</button>`);
+  overlay(`<div style="font-size:44px">${crestInline(44)} vs ${opp.flag}</div><h3 style="margin:6px 0">${S.name} vs ${opp.name}</h3><p class="mut">ステージ${si+1}「${STAGES[si].name}」<br>FIFAランク${M.orank}位 ${starsOf(M.orank)}<br>レベル ${effLv()}：${LV_NAME[effLv()-1]}${oppBoost(M.orank)?`（強豪国でむずかしさ+${oppBoost(M.orank)}）`:''}　全20問（前半10・後半10）<br>${leg===1?'第1戦（ホーム）':`第2戦（アウェイ）・第1戦は ${M.a0.my}-${M.a0.op}`}<br>正解＝ゴール、まちがい＝失点！時間はたっぷり、じっくり考えよう</p><button class="btn pri" onclick="kickoff()">キックオフ！</button>`);
 }
 function kickoff(){
   const t=today();if(S.daily.date!==t)S.daily={date:t,n:0};
@@ -406,8 +406,8 @@ function kickoff(){
 function nextQ(){
   if(M.phase==='reg'){
     if(M.rev){if(M.i>=M.rq.length)return finishRevenge()}
-    else if(M.i===5&&!M.ht){M.ht=true;overlay(`<h3>ハーフタイム</h3><div class="big">${M.my} - ${M.op}</div><button class="btn pri" onclick="closeOver();nextQ()">後半キックオフ</button>`);return}
-    if(!M.rev&&M.i===10){
+    else if(M.i===10&&!M.ht){M.ht=true;overlay(`<h3>ハーフタイム</h3><div class="big">${M.my} - ${M.op}</div><button class="btn pri" onclick="closeOver();nextQ()">後半キックオフ</button>`);return}
+    if(!M.rev&&M.i===20){
       if(M.leg===1||M.my+M.a0.my!==M.op+M.a0.op)return finish();
       M.phase='pk';overlay(`<h3>2試合の合計が同点！PK戦へ</h3><p class="mut">3問中2問正解で勝ち！</p><button class="btn pri" onclick="closeOver();nextQ()">PKスタート</button>`);return;
     }
@@ -419,14 +419,14 @@ function nextQ(){
   const paper=!M.rev&&STAGES[M.si].paper;
   q.limit=Math.max(8,Math.round(q.t*timeFactor(M.orank)*(M.rev?1.3:LV_T[S.lv-1])*(paper?1.5:1)*(S.slow?2:1)));
   M.q=q;M.input='';M.locked=false;
-  halfLab.textContent=M.rev?`苦手リベンジ ${M.i+1} / ${M.rq.length}問目`:(M.leg===2?`合計 ${M.my+M.a0.my}-${M.op+M.a0.op} ・ `:'第1戦 ・ ')+(M.phase==='pk'?`PK戦 ${M.pkI+1}本目（成功 ${M.pkMy}）`:(M.i<5?'前半':'後半')+` ${M.i+1}問目`);
+  halfLab.textContent=M.rev?`苦手リベンジ ${M.i+1} / ${M.rq.length}問目`:(M.leg===2?`合計 ${M.my+M.a0.my}-${M.op+M.a0.op} ・ `:'第1戦 ・ ')+(M.phase==='pk'?`PK戦 ${M.pkI+1}本目（成功 ${M.pkMy}）`:(M.i<10?'前半':'後半')+` ${M.i+1}問目`);
   qlab.textContent=`じっくり考えてOK`+(paper?'　✏️ 紙に筆算OK':'')+(q.wp?'　📝 文章題':'');
   document.getElementById('q').innerHTML=q.html+(q.wp?'':' ＝');document.getElementById('q').classList.toggle('small',!!q.small);
   hint.textContent={rem:'あまりがあるときは「あまり」ボタン（例: 7あまり3）',frac:'分数は「/」、帯分数は「と」（例: 1と2/5）',dec:'小数点は「.」',int:''}[q.type];
   comm.textContent='';renderAns();renderDots();renderPad(q.type);startTimer(q.limit);
 }
 function renderDots(){
-  let h='';for(let k=0;k<10;k++){const r=M.res[k];h+=`<i class="${r===1?'ok':r===0?'ng':(k===M.i&&M.phase==='reg'?'now':'')}"></i>`}dots.innerHTML=h;
+  let h='';for(let k=0;k<20;k++){const r=M.res[k];h+=`<i class="${r===1?'ok':r===0?'ng':(k===M.i&&M.phase==='reg'?'now':'')}"></i>`}dots.innerHTML=h;
 }
 function renderAns(){ans.textContent=M.input||'　'}
 function renderPad(type){
@@ -560,6 +560,7 @@ function finish(){
 }
 
 load();
+if(!S.teamV3){if(!S.name||S.name==='あざみ野FC')S.name='テゲバジャーロ宮崎';if(S.crest&&S.crest.txt==='AFC'&&S.crest.c1==='#1d4ed8')S.crest={c1:'#e4007f',c2:'#ffffff',txt:'TM'};S.teamV3=true;save()}
 /* 2026/11/22 時点の記録を反映（1回だけ） */
 if(!S.seedV2){S.pts=Math.max(S.pts,1610);S.cleared=S.cleared||{};for(let i=0;i<7;i++)S.cleared[i]=true;S.seedV2=true;save()}
 renderHome();

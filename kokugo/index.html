@@ -58,8 +58,8 @@ h1 small{display:block;font-size:12px;color:#9fb0cc;font-weight:500;margin-top:2
 .goalL,.goalR{position:absolute;top:6px;bottom:6px;width:6px;background:#fff}
 .goalL{left:0}.goalR{right:0}
 .ball{position:absolute;top:50%;left:50%;font-size:17px;transform:translate(-50%,-50%);transition:left .6s cubic-bezier(.3,.8,.4,1)}
-.dots{display:flex;gap:5px;justify-content:center;margin-top:6px}
-.dots i{width:9px;height:9px;border-radius:50%;background:#2a3a58}
+.dots{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:6px}
+.dots i{width:8px;height:8px;border-radius:50%;background:#2a3a58}
 .dots i.ok{background:#3ddc84}.dots i.ng{background:var(--red)}.dots i.now{background:#fff}
 .timer{height:8px;background:#2a3a58;border-radius:4px;margin-top:8px;overflow:hidden}
 .timer div{height:100%;background:var(--gold);width:100%}
@@ -228,8 +228,8 @@ const TEAMS=[
 const START_PTS=1440, K=50;
 
 /* ===== エンブレム ===== */
-const DEF_CREST={c1:'#1d4ed8',c2:'#ffffff',txt:'AFC'};
-const C1S=['#1d4ed8','#0ea5e9','#c60b1e','#f97316','#facc15','#16a34a','#7c3aed','#111827','#ffffff'];
+const DEF_CREST={c1:'#e4007f',c2:'#ffffff',txt:'TM'};
+const C1S=['#e4007f','#1d4ed8','#0ea5e9','#c60b1e','#f97316','#facc15','#16a34a','#7c3aed','#111827','#ffffff'];
 const C2S=['#ffffff','#facc15','#111827','#c60b1e','#1d4ed8'];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function crest(sz=40,c){c=c||S.crest||DEF_CREST;const t=esc(c.txt||'');const fs=[...(c.txt||'')].length>=3?10:13;
@@ -668,7 +668,7 @@ function stageQ(si,used){
 
 /* ===== セーブ ===== */
 let S;
-function load(){try{S=JSON.parse(localStorage.getItem('kotobaWC_v1'))}catch(e){}if(!S||typeof S.pts!=='number')S={name:'あざみ野FC',pts:START_PTS,cleared:{},best:{},slow:false,lv:3};if(!S.lv)S.lv=3;if(!S.crest)S.crest={...DEF_CREST}}
+function load(){try{S=JSON.parse(localStorage.getItem('kotobaWC_v1'))}catch(e){}if(!S||typeof S.pts!=='number')S={name:'テゲバジャーロ宮崎',pts:START_PTS,cleared:{},best:{},slow:false,lv:3};if(!S.lv)S.lv=3;if(!S.crest)S.crest={...DEF_CREST}}
 function save(){try{localStorage.setItem('kotobaWC_v1',JSON.stringify(S))}catch(e){}}
 
 
@@ -734,7 +734,7 @@ function renderHome(){
   });
   stages.innerHTML=h;
 }
-tname.addEventListener('change',()=>{S.name=tname.value.trim()||'あざみ野FC';save()});
+tname.addEventListener('change',()=>{S.name=tname.value.trim()||'テゲバジャーロ宮崎';save()});
 slow.addEventListener('change',()=>{S.slow=slow.checked;save();renderHome()});
 function resetAll(){overlay(`<h3>さいしょからやり直す？</h3><p class="mut">ランキングとクリア記録が消えます（チーム名とエンブレムはそのまま）。</p><div class="row" style="justify-content:center"><button class="btn" onclick="closeOver()">やめる</button><button class="btn pri" onclick="doReset()">やり直す</button></div>`)}
 function doReset(){S={name:S.name,crest:S.crest,pts:START_PTS,cleared:{},best:{},slow:S.slow,lv:3};save();closeOver();renderHome()}
@@ -764,17 +764,17 @@ const CM_NG=['うわっ、失点…','カウンターをくらった…','相手
 function startMatch(si){
   {const _b=hubBlock();if(_b)return hubBlockMsg(_b)}
   const opp=oppFor(S.pts),st=STAGES[si];
-  const k=st.read?2:R(2,3);const pos=new Set(shuffle([...Array(10).keys()]).slice(0,k));
+  const k=st.read?4:R(4,6);const pos=new Set(shuffle([...Array(20).keys()]).slice(0,k));
   M={si,opp,orank:realRank(opp),i:0,my:0,op:0,res:[],missed:[],phase:'reg',pkI:0,pkMy:0,ht:false,locked:true,ratios:[],times:[],tos:0,pos,used:new Set(),usedP:new Set()};
   crestMatch.innerHTML=crest(28);
   mMy.textContent=S.name;mOp.textContent=opp.name;mOpF.textContent=opp.flag;sMy.textContent=0;sOp.textContent=0;comm.textContent='';
   ball.style.left='50%';show('match');
-  overlay(`<div style="font-size:44px">${crestInline(44)} vs ${opp.flag}</div><h3 style="margin:6px 0">${esc(S.name)} vs ${opp.name}</h3><p class="mut">ステージ${si+1}「${st.name}」<br>FIFAランク${M.orank}位 ${starsOf(M.orank)}<br>レベル ${effLv()}：${LV_NAME[effLv()-1]}${oppBoost(M.orank)?`（強豪国でむずかしさ+${oppBoost(M.orank)}）`:''}　全10問（前半5・後半5）<br>正解＝ゴール、まちがい＝失点！時間はたっぷり、じっくり考えよう<br>ことわざ・四字熟語が${k}問まざるよ</p><button class="btn pri" onclick="closeOver();nextQ()">キックオフ！</button>`);
+  overlay(`<div style="font-size:44px">${crestInline(44)} vs ${opp.flag}</div><h3 style="margin:6px 0">${esc(S.name)} vs ${opp.name}</h3><p class="mut">ステージ${si+1}「${st.name}」<br>FIFAランク${M.orank}位 ${starsOf(M.orank)}<br>レベル ${effLv()}：${LV_NAME[effLv()-1]}${oppBoost(M.orank)?`（強豪国でむずかしさ+${oppBoost(M.orank)}）`:''}　全20問（前半10・後半10）<br>正解＝ゴール、まちがい＝失点！時間はたっぷり、じっくり考えよう<br>ことわざ・四字熟語が${k}問まざるよ</p><button class="btn pri" onclick="closeOver();nextQ()">キックオフ！</button>`);
 }
 function nextQ(){
   if(M.phase==='reg'){
-    if(M.i===5&&!M.ht){M.ht=true;overlay(`<h3>ハーフタイム</h3><div class="big">${M.my} - ${M.op}</div><button class="btn pri" onclick="closeOver();nextQ()">後半キックオフ</button>`);return}
-    if(M.i===10){
+    if(M.i===10&&!M.ht){M.ht=true;overlay(`<h3>ハーフタイム</h3><div class="big">${M.my} - ${M.op}</div><button class="btn pri" onclick="closeOver();nextQ()">後半キックオフ</button>`);return}
+    if(M.i===20){
       if(M.my!==M.op)return finish();
       M.phase='pk';overlay(`<h3>同点！PK戦へ</h3><p class="mut">3問中2問正解で勝ち！</p><button class="btn pri" onclick="closeOver();nextQ()">PKスタート</button>`);return;
     }
@@ -786,7 +786,7 @@ function nextQ(){
   const q=usePool?poolQ(st.tier,M.usedP):stageQ(M.si,M.used);
   q.limit=Math.max(8,Math.round(q.t*timeFactor(M.orank)*LV_T[S.lv-1]*(S.slow?2:1)));
   M.q=q;M.locked=false;
-  halfLab.textContent=M.phase==='pk'?`PK戦 ${M.pkI+1}本目（成功 ${M.pkMy}）`:(M.i<5?'前半':'後半')+` ・ ${M.i+1}問目`;
+  halfLab.textContent=M.phase==='pk'?`PK戦 ${M.pkI+1}本目（成功 ${M.pkMy}）`:(M.i<10?'前半':'後半')+` ・ ${M.i+1}問目`;
   qlab.innerHTML=`じっくり考えてOK`+(q.tag?`<span class="qtag">${q.tag}</span>`:'');
   psg.innerHTML=q.psg?`<div class="psg">${esc(q.psg)}</div>`:'';
   document.getElementById('q').innerHTML=q.q;
@@ -794,7 +794,7 @@ function nextQ(){
   comm.textContent='';renderDots();renderChoices();startTimer(q.limit);
 }
 function renderDots(){
-  let h='';for(let k=0;k<10;k++){const r=M.res[k];h+=`<i class="${r===1?'ok':r===0?'ng':(k===M.i&&M.phase==='reg'?'now':'')}"></i>`}dots.innerHTML=h;
+  let h='';for(let k=0;k<20;k++){const r=M.res[k];h+=`<i class="${r===1?'ok':r===0?'ng':(k===M.i&&M.phase==='reg'?'now':'')}"></i>`}dots.innerHTML=h;
 }
 function renderChoices(){
   const q=M.q,short=q.kanji||q.choices.every(c=>[...c].length<=3);
@@ -875,6 +875,7 @@ function finish(){
 }
 
 load();
+if(!S.teamV3){if(!S.name||S.name==='あざみ野FC')S.name='テゲバジャーロ宮崎';if(S.crest&&S.crest.txt==='AFC'&&S.crest.c1==='#1d4ed8')S.crest={c1:'#e4007f',c2:'#ffffff',txt:'TM'};S.teamV3=true;save()}
 /* 2026/11/22 時点の記録を反映（1回だけ） */
 if(!S.seedV2){S.pts=Math.max(S.pts,1496);S.cleared=S.cleared||{};for(let i=0;i<2;i++)S.cleared[i]=true;S.seedV2=true;save()}
 renderHome();
