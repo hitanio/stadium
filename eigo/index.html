@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>えいごワールドカップ</title>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;800&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--g1:#0b6b3a;--g2:#0f8a4b;--navy:#0c1b33;--gold:#ffc83d;--red:#e5484d;--ink:#13213a;--card:#fff;--mut:#6b778c}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{font-family:"M PLUS Rounded 1c",system-ui,sans-serif;background:var(--navy);color:var(--ink);font-weight:500}
+.screen{display:none;min-height:100%;max-width:520px;margin:0 auto;padding:14px 14px 28px}
+.screen.on{display:block}
+h1{color:#fff;font-size:22px;margin:4px 0 12px;font-weight:800;letter-spacing:.02em}
+h1 small{display:block;font-size:12px;color:#9fb0cc;font-weight:500;margin-top:2px}
+.card{background:var(--card);border-radius:16px;padding:14px;margin-bottom:12px}
+.team{display:flex;align-items:center;gap:10px}
+.team input{font:inherit;font-weight:800;font-size:17px;border:none;border-bottom:2px dashed #ccd;width:100%;padding:2px 0;color:var(--ink);background:transparent}
+.crestbtn{border:none;background:none;padding:0;cursor:pointer;position:relative}
+.crestbtn:after{content:"✎";position:absolute;right:-4px;bottom:-2px;font-size:11px;background:var(--gold);border-radius:50%;width:16px;height:16px;line-height:16px;text-align:center;color:#3a2a00}
+.rankbig{display:flex;align-items:baseline;gap:8px;margin-top:8px}
+.rankbig b{font-size:40px;font-weight:800;color:var(--g1)}
+.mut{color:var(--mut);font-size:13px}
+.vs{background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff}
+.vs .mut{color:#cfe9d9}
+.opp{display:flex;align-items:center;gap:12px;margin-top:6px}
+.flag{font-size:40px;line-height:1}
+.crest{display:inline-block;line-height:0}.crest svg{display:block}
+.lvtag{display:inline-block;background:#1d4ed8;color:#fff;border-radius:8px;padding:2px 8px;font-size:12px;font-weight:800}
+.stat{display:flex;justify-content:center;gap:14px;margin-top:8px;font-size:14px}.stat b{font-size:18px}
+.oname{font-size:20px;font-weight:800}
+.stars{color:var(--gold);letter-spacing:2px}
+.row{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.btn{font:inherit;font-weight:800;border:none;border-radius:12px;padding:10px 14px;background:#e9eef6;color:var(--ink);cursor:pointer}
+.btn.pri{background:var(--gold);color:#3a2a00}
+.btn.sm{padding:6px 10px;font-size:13px}
+.toggle{display:flex;align-items:center;gap:6px;font-size:13px;color:#cfe9d9}
+.grade{color:#fff;font-weight:800;margin:16px 2px 8px;font-size:15px}
+.stage{display:flex;align-items:center;gap:10px;background:#fff;border-radius:12px;padding:10px 12px;margin-bottom:8px;cursor:pointer;border:none;width:100%;text-align:left;font:inherit}
+.stage .no{width:34px;height:34px;border-radius:50%;background:var(--g2);color:#fff;font-weight:800;display:grid;place-items:center;flex:none}
+.stage .t{flex:1}
+.stage .t b{display:block;font-size:15px}
+.stage .st{font-size:12px;color:var(--mut)}
+.stage.lock{opacity:.45;cursor:not-allowed}
+.stage.lock .no{background:#99a}
+.stage.done .no{background:var(--gold);color:#3a2a00}
+.stage.fin .no{background:#7c3aed}
+/* match */
+.board{background:#0a1426;color:#fff;border-radius:16px;padding:10px 12px;position:sticky;top:6px;z-index:5;box-shadow:0 6px 16px #0006}
+.sc{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;text-align:center}
+.sc .nm{font-size:13px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sc .fl{font-size:28px;display:flex;justify-content:center}
+.sc .num{font-size:34px;font-weight:800;letter-spacing:4px}
+.half{text-align:center;font-size:12px;color:#9fb0cc;margin-top:2px}
+.pitch{position:relative;height:26px;margin-top:6px;border-radius:8px;background:repeating-linear-gradient(90deg,#127a41 0 28px,#0f6e3a 28px 56px);overflow:hidden}
+.pitch:before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:2px solid #ffffff66}
+.goalL,.goalR{position:absolute;top:6px;bottom:6px;width:6px;background:#fff}
+.goalL{left:0}.goalR{right:0}
+.ball{position:absolute;top:50%;left:50%;font-size:17px;transform:translate(-50%,-50%);transition:left .6s cubic-bezier(.3,.8,.4,1)}
+.dots{display:flex;gap:5px;justify-content:center;margin-top:6px}
+.dots i{width:9px;height:9px;border-radius:50%;background:#2a3a58}
+.dots i.ok{background:#3ddc84}.dots i.ng{background:var(--red)}.dots i.now{background:#fff}
+.timer{height:8px;background:#2a3a58;border-radius:4px;margin-top:8px;overflow:hidden}
+.timer div{height:100%;background:var(--gold);width:100%}
+.timer div.low{background:var(--red)}
+.qcard{background:#fff;border-radius:16px;padding:14px 12px;margin-top:12px}
+.qlab{font-size:12px;color:var(--mut);text-align:center}
+.qtag{display:inline-block;background:#fff3c4;color:#7a5a00;border-radius:6px;padding:1px 6px;font-size:11px;font-weight:800;margin-left:4px}
+.psg{background:#f6f8fc;border-left:4px solid var(--g2);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:15px;line-height:1.85;white-space:pre-wrap}
+.q{font-size:19px;font-weight:800;margin:10px 0 2px;line-height:1.6;text-align:center}
+.q .bigk{font-size:40px;display:block;letter-spacing:.08em;line-height:1.3}
+.mk{color:var(--g1);border-bottom:3px solid var(--g2);padding:0 2px}
+.hint{font-size:13px;color:var(--mut);min-height:16px;margin-top:6px;text-align:center}
+.hint.exp{color:var(--ink);background:#f1f5fb;border-radius:8px;padding:8px;text-align:left}
+.comm{color:#fff;text-align:center;font-weight:800;min-height:24px;margin-top:10px;font-size:16px}
+.choices{display:grid;gap:8px;margin-top:10px}
+.choices button{font:inherit;font-weight:800;font-size:17px;padding:12px;border-radius:12px;border:2px solid transparent;background:#fff;color:var(--ink);text-align:left;display:flex;gap:10px;align-items:center;cursor:pointer;line-height:1.45}
+.choices.kanji button{font-size:26px;justify-content:center}
+.choices.kanji{grid-template-columns:1fr 1fr}
+.choices button .k{flex:none;width:24px;height:24px;border-radius:50%;background:#e9eef6;display:grid;place-items:center;font-size:13px;color:var(--mut)}
+.choices.kanji button .k{display:none}
+.choices button:active{transform:scale(.98)}
+.choices button.right{background:#3ddc84;color:#06361c}
+.choices button.wrong{background:var(--red);color:#fff}
+.choices button.dim{opacity:.55}
+.nextbtn{font:inherit;font-weight:800;font-size:20px;border:none;border-radius:12px;padding:12px;background:var(--gold);color:#3a2a00;width:100%;margin-top:10px;cursor:pointer}
+.over{position:fixed;inset:0;background:#0c1b33dd;display:none;align-items:center;justify-content:center;z-index:9;padding:20px}
+.over.on{display:flex}
+.over .box{background:#fff;border-radius:18px;padding:20px;max-width:420px;width:100%;text-align:center;max-height:90vh;overflow:auto}
+.goaltxt{position:fixed;left:0;right:0;top:38%;text-align:center;font-size:56px;font-weight:800;color:var(--gold);text-shadow:0 4px 0 #0008;pointer-events:none;opacity:0;z-index:8}
+.goaltxt.go{animation:gl 1s ease-out}
+@keyframes gl{0%{opacity:0;transform:scale(.4)}25%{opacity:1;transform:scale(1.15)}70%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1)}}
+.res h2{margin:0 0 4px;font-size:26px}
+.big{font-size:44px;font-weight:800;margin:4px 0}
+.delta{font-size:18px;font-weight:800}
+.up{color:var(--g2)}.down{color:var(--red)}
+.miss{text-align:left;margin-top:10px;font-size:14px}
+.miss>div{padding:8px 0;border-bottom:1px solid #eef;line-height:1.6}
+.miss .ma{color:var(--g1);font-weight:800}
+.miss .me{color:var(--mut);font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td{padding:7px 6px;border-bottom:1px solid #eef}
+td.r{width:40px;text-align:right;font-weight:800;color:var(--mut)}
+td.p{text-align:right;color:var(--mut);font-size:12px}
+tr.me td{background:#fff3c4;font-weight:800}
+.note{color:#9fb0cc;font-size:11px;margin-top:12px;line-height:1.6}
+.sw{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:6px 0 12px}
+.sw button{width:34px;height:34px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px #ccd;cursor:pointer}
+.sw button.sel{box-shadow:0 0 0 3px var(--ink)}
+.cfield{font:inherit;font-weight:800;font-size:18px;text-align:center;border:2px solid #dde;border-radius:10px;padding:6px;width:120px}
+.en{font-family:"Fredoka","M PLUS Rounded 1c",sans-serif;font-weight:600}
+.sayb{border:none;background:#1d4ed8;color:#fff;border-radius:50%;width:66px;height:66px;font-size:30px;cursor:pointer;box-shadow:0 4px 0 #0d2f8a;margin:4px auto;display:block}
+.sayb:active{transform:translateY(3px);box-shadow:0 1px 0 #0d2f8a}
+.sayb.sm{width:44px;height:44px;font-size:20px;display:inline-block;vertical-align:middle;margin:0 0 0 6px}
+.sayi{border:none;background:#e9eef6;border-radius:8px;padding:2px 8px;font-size:15px;cursor:pointer;vertical-align:middle}
+.ql{font-size:15px;color:var(--mut);margin-top:6px}
+.emo{font-size:52px;display:block;line-height:1.25}
+.enw{font-family:"Fredoka",sans-serif;font-size:42px;font-weight:600;color:var(--g1);display:inline-block;vertical-align:middle}
+.jaw{font-size:32px;color:var(--g1)}
+.sent{font-family:"Fredoka","M PLUS Rounded 1c",sans-serif;font-size:23px;font-weight:600;line-height:1.5;margin:4px 0}
+.blank{display:inline-block;min-width:64px;border-bottom:3px solid var(--g2);color:var(--g2)}
+.jah{font-size:14px;color:var(--mut)}
+.choices.grid{grid-template-columns:1fr 1fr}
+.choices.grid button{justify-content:center;font-family:"Fredoka","M PLUS Rounded 1c",sans-serif;font-size:21px;font-weight:600}
+.choices.grid button .k{display:none}
+.choices.sentc button{font-family:"Fredoka","M PLUS Rounded 1c",sans-serif;font-weight:600}
+.hint.rv{color:var(--ink);font-size:15px}
+.hint b.en{color:var(--g1);font-size:17px}
+.board2{background:#f6f8fc;border-radius:12px;padding:10px 12px;text-align:left;font-size:14px;line-height:1.75;margin:8px 0}
+.board2 .pt b{color:#1d4ed8}
+.exl{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px dashed #dde;cursor:pointer}
+.exl .e{font-size:24px;min-width:34px;text-align:center}
+.exl .s{flex:1}.exl .s span{display:block;font-size:12px;color:var(--mut)}
+.wchips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:6px}
+.wchips button{border:none;background:#eef3ff;border-radius:10px;padding:4px 8px;font-size:13px;cursor:pointer}
+.wchips button b{font-family:"Fredoka",sans-serif}
+.timer{display:none}
+</style>
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<meta name="theme-color" content="#0c1b33">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="学習スタジアム">
+</head>
+<body>
+
+<!-- HOME -->
+<section id="home" class="screen on">
+  <a href="../index.html" class="hubback" style="display:flex;align-items:center;justify-content:center;gap:8px;background:#fff;color:#0c1b33;font-size:18px;font-weight:800;text-decoration:none;padding:14px 16px;border-radius:14px;margin-bottom:12px;box-shadow:0 3px 0 #0006">🏟️ スタジアム入口へもどる</a>
+  <h1>⚽ えいごワールドカップ<small>英語の「ことば」と「文のしくみ」で、世界ランキング1位をめざせ！</small></h1>
+  <div class="card">
+    <div class="team"><button class="crestbtn" id="crestHome" onclick="openCrest()" aria-label="エンブレムを変える"></button><input id="tname" maxlength="12" aria-label="チーム名"></div>
+    <div class="rankbig"><span class="mut">世界ランキング</span><b id="myRank">-</b><span class="mut" id="myPts"></span></div>
+    <div class="row" style="margin-top:6px"><span class="mut" id="clearInfo"></span><button class="btn sm" onclick="showRanking()">ランキング表</button></div>
+  </div>
+  <div class="card vs">
+    <div class="row"><span style="font-weight:800">つぎの対戦あいて</span><input type="checkbox" id="slow" hidden></div>
+    <div class="opp"><span class="flag" id="oFlag"></span><div><div class="oname" id="oName"></div><div class="mut"><span id="oRank"></span>　<span class="stars" id="oStars"></span></div><div class="mut" id="oTime"></div></div></div>
+    <div class="mut" style="margin-top:8px">ステージをえらぶと、さいしょに「作戦ボード」で文のしくみをチェック。🔊 で何回でも音が聞けるよ。前のステージのことばや、まちがえた問題も「ふくしゅう」でまた出てくる！</div>
+  </div>
+  <div id="stages"></div>
+  <div class="row" style="margin-top:14px"><span></span><button class="btn sm" onclick="resetAll()">さいしょからやり直す</button></div>
+  <div class="note">ランキングは FIFA/Coca-Cola 男子世界ランキング（2026年11月18日発表）をもとにしています。21位以下の順位とポイントの一部は概算です。英語の音声は、端末の読み上げ機能を使います。</div>
+</section>
+
+<!-- MATCH -->
+<section id="match" class="screen">
+  <div class="board">
+    <div class="sc">
+      <div><div class="fl" id="crestMatch"></div><div class="nm" id="mMy"></div></div>
+      <div class="num"><span id="sMy">0</span>-<span id="sOp">0</span></div>
+      <div><div class="fl" id="mOpF"></div><div class="nm" id="mOp"></div></div>
+    </div>
+    <div class="half" id="halfLab"></div>
+    <div class="pitch"><div class="goalL"></div><div class="goalR"></div><div class="ball" id="ball">⚽</div></div>
+    <div class="dots" id="dots"></div>
+    <div class="timer"><div id="tbar"></div></div>
+  </div>
+  <div class="qcard">
+    <div class="qlab" id="qlab"></div>
+    <div class="q" id="q"></div>
+    <div class="hint" id="hint"></div>
+  </div>
+  <div class="comm" id="comm"></div>
+  <div class="choices" id="choices"></div>
+  <div style="text-align:center;margin-top:14px"><button class="btn sm" onclick="quitMatch()">試合をやめる</button></div>
+</section>
+
+<!-- RESULT -->
+<section id="result" class="screen">
+  <div class="card res" id="resBox"></div>
+  <button class="btn pri" style="width:100%;padding:14px" onclick="goHome()">ホームへ</button>
+</section>
+
+<!-- RANKING -->
+<section id="ranking" class="screen">
+  <h1>🌍 世界ランキング<small>あなたのチームが入ったランキング</small></h1>
+  <div class="card" style="padding:6px 10px"><table id="rtable"></table></div>
+  <button class="btn pri" style="width:100%;padding:14px" onclick="goHome()">もどる</button>
+</section>
+
+<div class="over" id="over"><div class="box" id="overBox"></div></div>
+<div class="goaltxt" id="goaltxt">GOAL!!</div>
+
+<script>
+/* ===== クラウド保存（アカウントにセーブを保管し、ブラウザの記録が消えても復元） ===== */
+(function(){
+ const KEYS=['calcWC_v1','kotobaWC_v1','eigoWC_v1','wcHub_v1'],TK='wcSyncT_v1';
+ const P=Storage.prototype,orig=P.setItem;let ready=false,timer=null,ref=null;
+ const getT=()=>{try{return JSON.parse(localStorage.getItem(TK))||{}}catch(e){return {}}};
+ const setT=t=>{try{orig.call(localStorage,TK,JSON.stringify(t))}catch(e){}};
+ P.setItem=function(k,v){orig.call(this,k,v);if(ready&&this===window.localStorage&&KEYS.includes(k)){const t=getT();t[k]=Date.now();setT(t);push()}};
+ function push(){clearTimeout(timer);timer=setTimeout(async()=>{if(!ref)return;try{const t=getT(),d={t:{}};KEYS.forEach(k=>{const v=localStorage.getItem(k);if(v!=null){d[k]=v;d.t[k]=t[k]||0}});await ref.set(d)}catch(e){}},1500)}
+ async function start(){
+  for(let i=0;i<100&&!(window.claude&&window.claude.use);i++)await new Promise(r=>setTimeout(r,100));
+  if(!(window.claude&&window.claude.use))return;
+  try{
+   const db=await window.claude.use('db'),user=await window.claude.use('user');if(!db||!user)return;
+   const id=await user.id();if(!id)return;
+   ref=db.doc('data/users/'+id+'/save');
+   const snap=await ref.get();const rd=snap&&(typeof snap.data==='function'?snap.data():(snap.data||snap))||null;
+   const t=getT();let restored=false,needPush=false;
+   KEYS.forEach(k=>{const rt=rd&&rd.t&&rd.t[k]||0,lt=t[k]||0,rv=rd&&rd[k];
+    if(rv!=null&&rt>lt){orig.call(localStorage,k,rv);t[k]=rt;restored=true}
+    else if(localStorage.getItem(k)!=null&&(lt>rt||rv==null)){if(!t[k])t[k]=Date.now();needPush=true}});
+   setT(t);ready=true;
+   if(restored&&typeof window.onSyncRestored==='function')window.onSyncRestored();
+   if(needPush)push();
+  }catch(e){ready=true}
+ }
+ start();
+})();
+
+/* ===== ランキングデータ（2026/11/18発表ベース。21位以下は一部概算） ===== */
+const TEAMS=[
+["スペイン","🇪🇸",2004.48],["アルゼンチン","🇦🇷",1964.95],["フランス","🇫🇷",1950.82],["イングランド","🏴󠁧󠁢󠁥󠁮󠁧󠁿",1938.90],
+["モロッコ","🇲🇦",1809.37],["ポルトガル","🇵🇹",1800.10],["ブラジル","🇧🇷",1796.80],["ベルギー","🇧🇪",1790.37],
+["オランダ","🇳🇱",1782.43],["コロンビア","🇨🇴",1735.90],["ドイツ","🇩🇪",1730.50],["スイス","🇨🇭",1724.00],
+["メキシコ","🇲🇽",1723.64],["イタリア","🇮🇹",1717.20],["クロアチア","🇭🇷",1714.22],["アメリカ","🇺🇸",1713.56],
+["日本","🇯🇵",1684.61],["セネガル","🇸🇳",1648.84],["ノルウェー","🇳🇴",1643.59],["ウルグアイ","🇺🇾",1640.00],
+["デンマーク","🇩🇰",1629.71],["オーストリア","🇦🇹",1605.90],["イラン","🇮🇷",1599.43],["エクアドル","🇪🇨",1590.74],
+["カナダ","🇨🇦",1588.00],["エジプト","🇪🇬",1585.86],["オーストラリア","🇦🇺",1584.00],["アルジェリア","🇩🇿",1574.77],
+["コートジボワール","🇨🇮",1569.32],["韓国","🇰🇷",1567.00],["ナイジェリア","🇳🇬",1563.00],["トルコ","🇹🇷",1556.22],
+["パラグアイ","🇵🇾",1553.60],["スウェーデン","🇸🇪",1549.68],["ウクライナ","🇺🇦",1525.65],["ハンガリー","🇭🇺",1516.43],
+["コンゴ民主共和国","🇨🇩",1506.37],["ポーランド","🇵🇱",1505.86],["ウェールズ","🏴󠁧󠁢󠁷󠁬󠁳󠁿",1504.67],["ギリシャ","🇬🇷",1494.89],
+["スコットランド","🏴󠁧󠁢󠁳󠁣󠁴󠁿",1489.20],["カメルーン","🇨🇲",1485.30],["パナマ","🇵🇦",1481.68],["セルビア","🇷🇸",1477.92],
+["マリ","🇲🇱",1474.14],["スロバキア","🇸🇰",1473.06],["南アフリカ","🇿🇦",1468.88],["ベネズエラ","🇻🇪",1465.87],
+["チリ","🇨🇱",1456.40]
+].map(([name,flag,pts])=>({name,flag,pts}));
+const START_PTS=1440, K=50;
+
+/* ===== エンブレム ===== */
+const DEF_CREST={c1:'#1d4ed8',c2:'#ffffff',txt:'AFC'};
+const C1S=['#1d4ed8','#0ea5e9','#c60b1e','#f97316','#facc15','#16a34a','#7c3aed','#111827','#ffffff'];
+const C2S=['#ffffff','#facc15','#111827','#c60b1e','#1d4ed8'];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function crest(sz=40,c){c=c||S.crest||DEF_CREST;const t=esc(c.txt||'');const fs=[...(c.txt||'')].length>=3?10:13;
+ return `<svg width="${sz}" height="${Math.round(sz*1.15)}" viewBox="0 0 40 46" aria-hidden="true"><path d="M4 3h32v20c0 11-7 18-16 21C11 41 4 34 4 23z" fill="${c.c1}" stroke="#0005" stroke-width="2.5"/><path d="M4 3h32v20c0 11-7 18-16 21C11 41 4 34 4 23z" fill="none" stroke="${c.c2}" stroke-width="1.2"/><path d="M8 7h24v16c0 8-5 13.5-12 16-7-2.5-12-8-12-16z" fill="none" stroke="${c.c2}" stroke-width="1.2"/><text x="20" y="26.5" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="${fs}" fill="${c.c2}">${t}</text></svg>`}
+const crestInline=sz=>`<span class="crest" style="display:inline-block;vertical-align:middle">${crest(sz)}</span>`;
+
+/* ===== 便利関数 ===== */
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[R(0,a.length-1)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=R(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
+const mk=s=>esc(s).replace(/【(.*?)】/g,'<span class="mk">$1</span>');
+
+/* ===== 英語の読み上げ（I は「アイ」と読ませる） ===== */
+let VOICE=null;
+function pickVoice(){try{const vs=speechSynthesis.getVoices();
+ VOICE=vs.find(v=>/^en[-_]US/i.test(v.lang)&&/Samantha|Google US|Aria|Jenny|Zira/i.test(v.name))||vs.find(v=>/^en[-_]US/i.test(v.lang))||vs.find(v=>/^en/i.test(v.lang))||null}catch(e){}}
+pickVoice();try{speechSynthesis.onvoiceschanged=pickVoice}catch(e){}
+function speak(t){try{const s=window.speechSynthesis;if(!s||!t)return;s.cancel();
+ const txt=t.replace(/（.*?）/g,'').replace(/—/g,',').replace(/\bI\b(?!')/g,'eye');
+ const u=new SpeechSynthesisUtterance(txt);if(!VOICE)pickVoice();if(VOICE)u.voice=VOICE;u.lang=VOICE?VOICE.lang:'en-US';u.rate=.82;s.speak(u)}catch(e){}}
+document.addEventListener('click',e=>{const t=e.target.closest('[data-say]');if(t){e.stopPropagation();speak(t.dataset.say)}},true);
+const sayBtn=(s,cls='sayi')=>`<button class="${cls}" data-say="${esc(s)}" aria-label="きく">🔊</button>`;
+
+/* ===== 問題づくりの部品 =====
+ H=聞いて意味をえらぶ / M=英文の意味 / F=空らんに入る語 / J=日本語→正しい英文 */
+const H=(s,a,w,x)=>({k:'hear',s,a,w,x});
+const M_=(s,a,w,e,x)=>({k:'mean',s,a,w,e,x});
+const F=(s,a,w,e,ja,x)=>({k:'fill',s,a,w,e,ja,x});
+const J=(ja,a,w,e,x)=>({k:'je',ja,a,w,e,x});
+const WL=s=>s.trim().split('\n').map(l=>{const [en,kana,ja,e]=l.trim().split('|');return {en,kana,ja,e}});
+
+/* ===== ステージ（単語セット＋文法セット。文法はやさしい→むずかしい順） ===== */
+const STAGES=[
+/* ---------- ステップ1 ---------- */
+{g:3,name:"どうぶつ ＋ This is a ～.",icon:'🐱',
+ point:'ちかくの ものを しょうかいする ときは <b>This is a ～.</b>（これは ～です）。<br><b>a</b> は「1つの」。<b>elephant</b> のように ア・イ・ウ・エ・オ の 音で はじまる ことばの まえは <b>an</b>。<br>しつもんは <b>Is this ～?</b> と is を まえに。',
+ ex:[['This is a cat.','これは ねこです。','🐱'],['This is an elephant.','これは ぞうです。','🐘'],['Is this a lion?','これは ライオンですか？','🦁']],
+ words:WL(`cat|キャット|ねこ|🐱
+ dog|ドッグ|いぬ|🐶
+ rabbit|ラビット|うさぎ|🐰
+ bird|バード|とり|🐦
+ fish|フィッシュ|さかな|🐟
+ elephant|エレファント|ぞう|🐘
+ lion|ライオン|ライオン|🦁
+ monkey|モンキー|さる|🐵
+ bear|ベア|くま|🐻
+ panda|パンダ|パンダ|🐼`),
+ gram:[
+ H('This is a cat.','🐱 これは ねこです',['🐶 これは いぬです','🐰 これは うさぎです','🐦 これは とりです']),
+ H('This is a bear.','🐻 これは くまです',['🐼 これは パンダです','🐵 これは さるです','🦁 これは ライオンです']),
+ M_('This is a rabbit.','これは うさぎです。',['これは いぬです。','あれは うさぎです。','うさぎが すきです。'],'🐰','This is ～ ＝「これは ～です」。'),
+ F('This ___ a dog.','is',['am','are','a'],'🐶','これは いぬです。','This の あとは is。This is ～ で「これは ～です」。'),
+ F('This is ___ bird.','a',['an','is','I'],'🐦','これは とりです。','1わ（1つ）だから a。bird は「バ」の音なので an では ない。'),
+ F('This is ___ elephant.','an',['a','is','am'],'🐘','これは ぞうです。','elephant は「エ」の音で はじまるので an。'),
+ F('___ is a fish.','This',['I','You','Am'],'🐟','これは さかなです。','「これは」は This。'),
+ M_('Is this a lion?','これは ライオンですか？',['これは ライオンです。','あれは ライオンです。','ライオンが すきですか？'],'🦁','is を まえに だすと「～ですか？」の しつもんに なるよ。'),
+ F('Is this a monkey? — Yes, it ___.','is',['am','are','do'],'🐵','はい、そうです。','Is this ～? には Yes, it is. / No, it isn\'t. で こたえる。'),
+ J('これは パンダです。','This is a panda.',['This a panda is.','Is this a panda.','This is panda a.'],'🐼','じゅんばんは This → is → a panda。'),
+ J('これは ぞうです。','This is an elephant.',['This is a elephant.','This an elephant is.','This are an elephant.'],'🐘','elephant の まえは an。This の あとは is。'),
+ J('これは くまですか？','Is this a bear?',['This is a bear?','Is a bear this?','Are this a bear?'],'🐻','しつもんの ときは Is が さいしょ。'),
+ H("Is this a fish? — No, it isn't.",'🙅 いいえ、ちがいます',['🙆 はい、そうです','🐟 これは さかなです','🐦 これは とりです'],"No, it isn't. ＝「いいえ、ちがいます」。")]},
+
+{g:3,name:"きもち ＋ I am / You are",icon:'😊',
+ point:'じぶんの ことは <b>I am ～.</b>、あいての ことは <b>You are ～.</b><br><b>I には am</b>、<b>you には are</b> が セット！<br>しつもんは <b>Are you ～?</b>　こたえは <b>Yes, I am.</b>',
+ ex:[['I am happy.','わたしは うれしいです。','😊'],['You are tired.','あなたは つかれています。','😩'],['Are you hungry?','あなたは おなかが すいていますか？','😋']],
+ words:WL(`happy|ハッピー|うれしい|😊
+ sad|サッド|かなしい|😢
+ hungry|ハングリー|おなかが すいた|😋
+ sleepy|スリーピー|ねむい|😪
+ hot|ホット|あつい|🥵
+ cold|コールド|さむい|🥶
+ tired|タイアード|つかれた|😩
+ fine|ファイン|げんき|🙂`),
+ gram:[
+ H('I am happy.','😊 わたしは うれしい',['😢 わたしは かなしい','😪 わたしは ねむい','🥶 わたしは さむい']),
+ H('I am hungry.','😋 おなかが すいた',['😩 つかれた','🥵 あつい','🙂 げんき']),
+ M_('I am sleepy.','わたしは ねむいです。',['あなたは ねむいです。','わたしは つかれています。','わたしは ねます。'],'😪','I am ～ ＝「わたしは ～です」。'),
+ F('I ___ hot.','am',['is','are','a'],'🥵','わたしは あついです。','I の あとは いつも am。'),
+ F('You ___ tired.','are',['am','is','do'],'😩','あなたは つかれています。','You の あとは are。'),
+ F('___ am cold.','I',['You','This','Are'],'🥶','わたしは さむいです。','am の まえに くるのは I だけ。'),
+ M_('You are happy.','あなたは うれしいです。',['わたしは うれしいです。','あなたは かなしいです。','あなたは うれしいですか？'],'😊','You are ～ ＝「あなたは ～です」。'),
+ F('___ you sad?','Are',['Am','Is','Do'],'😢','あなたは かなしいですか？','You の しつもんは Are を さいしょに。'),
+ F('Are you fine? — Yes, I ___.','am',['are','is','do'],'🙂','はい、げんきです。','Are you ～? と きかれたら、じぶんの ことなので Yes, I am.'),
+ M_('Are you hungry?','あなたは おなかが すいていますか？',['わたしは おなかが すいています。','あなたは おなかが すいています。','あなたは ねむいですか？'],'😋','Are you ～? ＝「あなたは ～ですか？」'),
+ J('わたしは かなしいです。','I am sad.',['I is sad.','I are sad.','Am I sad.'],'😢','I には am。'),
+ J('あなたは つかれていますか？','Are you tired?',['You are tired?','Am you tired?','Is you tired?'],'😩','しつもんは Are が さいしょ。'),
+ H("How are you? — I'm fine.",'🙂 げんきだよ',['😪 ねむいよ','😢 かなしいよ','😋 おなかが すいた'],"How are you?（げんき？）への こたえ。I'm は I am を みじかく した ことば。")]},
+
+{g:3,name:"いろ ＋ I like ～.",icon:'🎨',
+ point:'すきな ものは <b>I like ～.</b><br>にほんごと ちがって「すき（like）」が <b>まえ</b>！<br><b>I am like</b> は まちがい。like だけで OK。<br>いろを きくときは <b>What color do you like?</b>',
+ ex:[['I like blue.','わたしは あおが すきです。','🔵'],['What color do you like?','なにいろが すきですか？','🎨'],['I like red.','あかが すきです。','🔴']],
+ words:WL(`red|レッド|あか|🔴
+ blue|ブルー|あお|🔵
+ yellow|イエロー|きいろ|🟡
+ green|グリーン|みどり|🟢
+ pink|ピンク|ピンク|🌸
+ orange|オレンジ|オレンジいろ|🟠
+ black|ブラック|くろ|⚫
+ white|ホワイト|しろ|⚪
+ purple|パープル|むらさき|🟣
+ brown|ブラウン|ちゃいろ|🟤`),
+ gram:[
+ H('I like red.','🔴 あかが すき',['🔵 あおが すき','🟡 きいろが すき','🟢 みどりが すき']),
+ H('I like purple.','🟣 むらさきが すき',['🟤 ちゃいろが すき','⚫ くろが すき','🌸 ピンクが すき']),
+ M_('I like blue.','わたしは あおが すきです。',['わたしは あおです。','あなたは あおが すきです。','わたしは あおが すきですか？'],'🔵','I like ～ ＝「わたしは ～が すき」。'),
+ F('I ___ green.','like',['am','is','a'],'🟢','わたしは みどりが すきです。','「すき」は like。'),
+ F('I like ___.（きいろ）','yellow',['yellows','a yellow','is yellow'],'🟡','わたしは きいろが すきです。','いろの なまえは そのまま つかうよ。'),
+ F('What ___ do you like?','color',['is','am','you'],'🎨','なにいろが すきですか？','「なにいろ」は What color。'),
+ F('What color do you like? — I ___ pink.','like',['am','is','do'],'🌸','ピンクが すきです。','こたえも I like ～.'),
+ M_('What color do you like?','なにいろが すきですか？',['これは なにいろですか？','あかが すきですか？','いろが すきです。'],'🎨','What color ～? ＝「なにいろ～？」'),
+ J('わたしは くろが すきです。','I like black.',['I am like black.','I black like.','Like I black.'],'⚫','I am like は まちがい！「すき」は like だけで OK。'),
+ J('わたしは オレンジいろが すきです。','I like orange.',['I orange like.','I is like orange.','I likes orange.'],'🟠','じゅんばんは I → like → すきな もの。'),
+ J('なにいろが すきですか？','What color do you like?',['What color you like?','Color what do you like?','What do you like color?'],'🎨','What color が さいしょ、つぎに do you like。'),
+ H('I like white and brown.','⚪🟤 しろと ちゃいろが すき',['⚫🟤 くろと ちゃいろが すき','⚪🟡 しろと きいろが すき','🔴🔵 あかと あおが すき'],'and ＝「と」。')]},
+
+{g:3,name:"たべもの ＋ Do you like ～? / don't",icon:'🍎',
+ point:'すきじゃない ときは <b>I don\'t like ～.</b>（like の まえに don\'t）<br>あいてに きくときは <b>Do you like ～?</b><br>こたえは <b>Yes, I do.</b> / <b>No, I don\'t.</b><br>くだもの・やさいは <b>apples</b> のように s を つけて いうよ。',
+ ex:[['Do you like milk?','ぎゅうにゅうが すきですか？','🥛'],['Yes, I do.','はい、すきです。','🙆'],["I don't like tomatoes.",'トマトが すきでは ありません。','🍅']],
+ words:WL(`apple|アップル|りんご|🍎
+ banana|バナナ|バナナ|🍌
+ egg|エッグ|たまご|🥚
+ milk|ミルク|ぎゅうにゅう|🥛
+ bread|ブレッド|パン|🍞
+ rice|ライス|ごはん|🍚
+ cake|ケーキ|ケーキ|🍰
+ juice|ジュース|ジュース|🧃
+ carrot|キャロット|にんじん|🥕
+ tomato|トマト|トマト|🍅`),
+ gram:[
+ H('I like bananas.','🍌 バナナが すき',['🍎 りんごが すき','🍅 トマトが すき','🥕 にんじんが すき']),
+ H("I don't like tomatoes.",'🍅🙅 トマトが すきじゃない',['🍅🙆 トマトが すき','🥕🙅 にんじんが すきじゃない','🥕🙆 にんじんが すき'],"don't like ＝「すきじゃない」。"),
+ M_('Do you like milk?','ぎゅうにゅうが すきですか？',['ぎゅうにゅうが すきです。','ぎゅうにゅうが すきじゃないです。','ぎゅうにゅうを もっていますか？'],'🥛','Do you like ～? ＝「～が すきですか？」'),
+ F("I ___ like carrots.（すきじゃない）","don't",['am','do','not'],'🥕','わたしは にんじんが すきじゃないです。',"「すきじゃない」は like の まえに don't。"),
+ F('___ you like cake?','Do',['Are','Am','Is'],'🍰','ケーキが すきですか？','like の しつもんは Do が さいしょ。'),
+ F('Do you like eggs? — Yes, I ___.','do',['am','like','are'],'🥚','はい、すきです。','Do you ～? には Yes, I do. で こたえる。'),
+ F('Do you like rice? — No, I ___.',"don't",['do','am not','like'],'🍚','いいえ、すきじゃないです。',"「いいえ」は No, I don't."),
+ M_("I don't like juice.",'わたしは ジュースが すきでは ありません。',['わたしは ジュースが すきです。','ジュースが すきですか？','わたしは ジュースを もっていません。'],'🧃',"don't ＝「～ない」。"),
+ J('わたしは パンが すきです。','I like bread.',['I am bread.','I bread like.','I do bread.'],'🍞','I like ～.'),
+ J('にんじんが すきですか？','Do you like carrots?',['Are you like carrots?','You like carrots?','Do like you carrots?'],'🥕','Are you like は まちがい！ like の しつもんは Do。'),
+ J('わたしは トマトが すきじゃないです。',"I don't like tomatoes.",["I like don't tomatoes.","I am not like tomatoes.","Don't I like tomatoes."],'🍅',"don't は like の まえ。"),
+ H('Do you like cake? — Yes, I do.','🙆🍰 ケーキ すき？ → すき！',['🙅🍰 ケーキ すき？ → すきじゃない','🙆🍞 パン すき？ → すき！','🙅🍞 パン すき？ → すきじゃない'])]},
+
+{g:3,name:"かず ＋ How many ～? / ふくすうの s",icon:'🔢',
+ point:'2つ いじょうは ことばの さいごに <b>s</b>！<br>one cat 🐱 → <b>two cats</b> 🐱🐱<br>かずを きくときは <b>How many ～?</b>（いくつ？）',
+ ex:[['two cats','2ひきの ねこ','🐱🐱'],['How many dogs?','いぬは なんびき？','🐶❓'],['Three dogs.','3びきです。','🐶🐶🐶']],
+ words:WL(`one|ワン|いち|1️⃣
+ two|トゥー|に|2️⃣
+ three|スリー|さん|3️⃣
+ four|フォー|よん|4️⃣
+ five|ファイブ|ご|5️⃣
+ six|シックス|ろく|6️⃣
+ seven|セブン|なな|7️⃣
+ eight|エイト|はち|8️⃣
+ nine|ナイン|きゅう|9️⃣
+ ten|テン|じゅう|🔟
+ eleven|イレブン|じゅういち|11
+ twelve|トゥエルブ|じゅうに|12`),
+ gram:[
+ H('three dogs','🐶🐶🐶 3びきの いぬ',['🐶🐶 2ひきの いぬ','🐱🐱🐱 3びきの ねこ','🐶 1ぴきの いぬ']),
+ H('ten apples','🍎×10 りんご 10こ',['🍎×2 りんご 2こ','🍌×10 バナナ 10ぽん','🍎×7 りんご 7こ']),
+ F('two ___','cats',['cat','a cat','cat two'],'🐱🐱','2ひきの ねこ','2つ いじょうは s を つける。'),
+ F('one ___','dog',['dogs','an dog','one dog'],'🐶','1ぴきの いぬ','1つの ときは s は つけない。'),
+ F('How ___ birds?','many',['color','is','are'],'🐦🐦🐦','とりは なんわ？','「いくつ？」は How many。'),
+ F('How many pencils? — ___ pencils.','Five',['Fives','Fifth','Fine'],'✏️×5','えんぴつは なんぼん？ — 5ほん。','5 は five。'),
+ M_('How many rabbits?','うさぎは なんびき？',['うさぎは どこ？','うさぎが すき？','うさぎは なにいろ？'],'🐰','How many ～? ＝「いくつ？ なんびき？」'),
+ F('I have ___ eggs.（12こ）','twelve',['twenty','two','eleven'],'🥚','たまごを 12こ もっています。','12 は twelve。11 は eleven。'),
+ F('nine ___（さる）','monkeys',['monkey','a monkey','monkeyes'],'🐵×9','9ひきの さる','2つ いじょう だから monkeys。'),
+ J('ねこは なんびき？','How many cats?',['How many cat?','Many how cats?','How cats many?'],'🐱','How many の あとは s つきの ことば。'),
+ J('りんご 8こ','eight apples',['eight apple','apples eight','eighth apples'],'🍎','8こ だから apples（s つき）。'),
+ H('How many bananas? — Seven.','🍌×7 7ほん',['🍌×6 6ぽん','🍌×11 11ぽん','🍎×7 りんご 7こ'])]},
+
+/* ---------- ステップ2 ---------- */
+{g:4,name:"うごき ＋ I can / can't",icon:'🏊',
+ point:'できる ことは <b>I can ～.</b>、できない ことは <b>I can\'t ～.</b><br>きくときは <b>Can you ～?</b>　こたえは <b>Yes, I can.</b> / <b>No, I can\'t.</b><br>can の あとには うごきの ことばを そのまま。',
+ ex:[['I can swim.','わたしは およげます。','🏊'],["I can't skate.",'スケートが できません。','⛸️'],['Can you dance?','おどれますか？','💃']],
+ words:WL(`run|ラン|はしる|🏃
+ swim|スイム|およぐ|🏊
+ jump|ジャンプ|ジャンプする|🤸
+ sing|シング|うたう|🎤
+ dance|ダンス|おどる|💃
+ cook|クック|りょうりする|🍳
+ skate|スケート|スケートを する|⛸️
+ ski|スキー|スキーを する|⛷️`),
+ gram:[
+ H('I can swim.','🏊🙆 およげる',['🏊🙅 およげない','🏃🙆 はしれる','💃🙆 おどれる']),
+ H("I can't skate.",'⛸️🙅 スケートが できない',['⛸️🙆 スケートが できる','⛷️🙅 スキーが できない','⛷️🙆 スキーが できる'],"can't ＝「できない」。"),
+ M_('I can sing.','わたしは うたえます。',['わたしは うたいません。','わたしは うたうのが すきです。','うたえますか？'],'🎤','can ＝「できる」。'),
+ F('I can ___.（はしる）','run',['runs','running','a run'],'🏃','わたしは はしれます。','can の あとは うごきの ことば そのまま。'),
+ F("I ___ cook.（できない）","can't",["don't",'can','am'],'🍳','わたしは りょうりが できません。',"「できない」は can't。"),
+ F('___ you dance?','Can',['Are','Am','Is'],'💃','あなたは おどれますか？','「できる？」と きく ときは Can が さいしょ。'),
+ F('Can you jump? — Yes, I ___.','can',['do','am','is'],'🤸','はい、できます。',"Can you ～? には Yes, I can. / No, I can't."),
+ F("Can you ski? — No, I ___.","can't",["don't",'am not','can'],'⛷️','いいえ、できません。',"No, I can't."),
+ M_('Can you swim?','あなたは およげますか？',['あなたは およげます。','あなたは およぐのが すきですか？','わたしは およげます。'],'🏊','Can you ～? ＝「～できますか？」'),
+ J('わたしは スキーが できます。','I can ski.',['I am ski.','I can skis.','Can I ski.'],'⛷️','I → can → うごき。'),
+ J('あなたは りょうりが できますか？','Can you cook?',['Do you can cook?','You can cook?','Are you cook?'],'🍳','Can が さいしょ。Do は いらない。'),
+ J('わたしは うたえません。',"I can't sing.",["I don't can sing.","I can sing not.","I can't singing."],'🎤',"can't の あとは うごきの ことば そのまま。")]},
+
+{g:4,name:"がっこう ＋ I have / What is this?",icon:'🎒',
+ point:'もっている ものは <b>I have a ～.</b><br>「これは なに？」は <b>What is this?</b><br>こたえは <b>It is a ～.</b>（それは ～です）<br>もっているか きくときは <b>Do you have ～?</b>',
+ ex:[['I have a ruler.','じょうぎを もっています。','📏'],['What is this?','これは なんですか？','❓'],['It is a clock.','それは とけいです。','⏰']],
+ words:WL(`pencil|ペンシル|えんぴつ|✏️
+ pen|ペン|ペン|🖊️
+ book|ブック|ほん|📕
+ notebook|ノートブック|ノート|📓
+ bag|バッグ|かばん|🎒
+ ruler|ルーラー|じょうぎ|📏
+ chair|チェア|いす|🪑
+ clock|クロック|とけい|⏰
+ scissors|シザーズ|はさみ|✂️`),
+ gram:[
+ H('I have a pencil.','✏️ えんぴつを もっている',['🖊️ ペンを もっている','📏 じょうぎを もっている','✂️ はさみを もっている']),
+ H('What is this? — It is a clock.','⏰ とけい',['📕 ほん','🎒 かばん','🪑 いす']),
+ M_('I have a bag.','わたしは かばんを もっています。',['これは かばんです。','わたしは かばんが すきです。','かばんは どこ？'],'🎒','have ＝「もっている」。'),
+ F('I ___ a ruler.','have',['am','is','are'],'📏','わたしは じょうぎを もっています。','「もっている」は have。'),
+ F('I have ___ book.','a',['an','am','is'],'📕','わたしは ほんを もっています。','1さつ だから a。'),
+ F('___ is this?','What',['How','Who','Where'],'❓','これは なんですか？','「なに？」は What。'),
+ F('What is this? — ___ is a notebook.','It',['I','You','This'],'📓','それは ノートです。','こたえは It is ～.（それは ～です）'),
+ F('Do you have scissors? — Yes, I ___.','do',['have','am','can'],'✂️','はい、もっています。','Do you have ～? には Yes, I do.'),
+ M_('What is this?','これは なんですか？',['これは ほんです。','あれは だれですか？','なにが すきですか？'],'❓','What is this? ＝「これは なに？」'),
+ J('わたしは ペンを 2ほん もっています。','I have two pens.',['I have two pen.','I am two pens.','I two pens have.'],'🖊️🖊️','2ほん だから pens（s つき）。'),
+ J('それは いすです。','It is a chair.',['It a chair is.','It is chair a.','Is it a chair.'],'🪑','It is a ～.'),
+ J('はさみを もっていますか？','Do you have scissors?',['Are you have scissors?','You have scissors?','Have you do scissors?'],'✂️','have の しつもんも Do が さいしょ。')]},
+
+{g:4,name:"いえ ＋ in / on / under・Where",icon:'📦',
+ point:'ばしょの ことば：<b>in</b>＝なか、<b>on</b>＝うえ、<b>under</b>＝した。<br>「どこ？」は <b>Where is ～?</b>　こたえは <b>It is in ～.</b><br><b>the</b> は「その」。きまった ものを さすよ。',
+ ex:[['The cat is in the box.','ねこは はこの なかに います。','📦🐱'],['The ball is under the bed.','ボールは ベッドの したに あります。','🛏️⚽'],['Where is the cup?','コップは どこ？','☕❓']],
+ words:WL(`box|ボックス|はこ|📦
+ bed|ベッド|ベッド|🛏️
+ door|ドア|ドア|🚪
+ window|ウィンドウ|まど|🪟
+ cup|カップ|コップ|☕
+ TV|ティーヴィー|テレビ|📺
+ sofa|ソファ|ソファ|🛋️
+ bath|バス|おふろ|🛁`),
+ gram:[
+ H('The cat is in the box.','📦🐱 はこの なか',['📦🐱 はこの うえ','📦🐱 はこの した','🛏️🐱 ベッドの うえ']),
+ H('The ball is under the bed.','🛏️⚽ ベッドの した',['🛏️⚽ ベッドの うえ','🛋️⚽ ソファの した','📦⚽ はこの なか']),
+ M_('The cup is on the TV.','コップは テレビの うえに あります。',['コップは テレビの したに あります。','コップは テレビの なかに あります。','テレビは コップの うえに あります。'],'☕📺','on ＝ うえ。'),
+ F('The dog is ___ the sofa.（うえ）','on',['in','under','at'],'🐶🛋️','いぬは ソファの うえに います。','うえ は on。'),
+ F('The book is ___ the bag.（なか）','in',['on','under','is'],'📕🎒','ほんは かばんの なかに あります。','なか は in。'),
+ F('The cat is ___ the chair.（した）','under',['on','in','up'],'🐱🪑','ねこは いすの したに います。','した は under。'),
+ F('___ is my bag?','Where',['What','How','Who'],'🎒❓','わたしの かばんは どこ？','「どこ？」は Where。'),
+ F('Where is the ball? — ___ is in the box.','It',['I','You','This'],'⚽📦','ボールは はこの なかに あります。','こたえは It is ～.'),
+ M_('Where is the cat?','ねこは どこ？',['これは ねこですか？','ねこは なにいろ？','ねこが すき？'],'🐱❓','Where is ～? ＝「～は どこ？」'),
+ J('いぬは ベッドの うえに います。','The dog is on the bed.',['The dog is in the bed.','The dog on is the bed.','The dog is under the bed.'],'🐶🛏️','うえ は on。'),
+ J('ボールは どこ？','Where is the ball?',['What is the ball?','Where the ball is?','Is where the ball?'],'⚽❓','Where is が さいしょ。'),
+ J('ねこは はこの したに います。','The cat is under the box.',['The cat is in the box.','The cat under is the box.','The cat is on the box.'],'🐱📦','した は under。')]},
+
+{g:4,name:"かぞく ＋ He is / She is",icon:'👨‍👩‍👧',
+ point:'おとこの ひとは <b>he</b>（かれ）、おんなの ひとは <b>she</b>（かのじょ）。<br>he と she の あとは <b>is</b>！<br><b>I am / you are / he is / she is</b> の セットを おぼえよう。',
+ ex:[['He is my father.','かれは わたしの おとうさんです。','👨'],['She is my teacher.','かのじょは わたしの せんせいです。','🧑‍🏫'],['Is she your mother?','かのじょは あなたの おかあさんですか？','👩']],
+ words:WL(`father|ファーザー|おとうさん|👨
+ mother|マザー|おかあさん|👩
+ brother|ブラザー|きょうだい（おとこ）|👦
+ sister|シスター|しまい（おんな）|👧
+ grandfather|グランドファーザー|おじいさん|👴
+ grandmother|グランドマザー|おばあさん|👵
+ friend|フレンド|ともだち|🧑‍🤝‍🧑
+ teacher|ティーチャー|せんせい|🧑‍🏫
+ baby|ベイビー|あかちゃん|👶`),
+ gram:[
+ H('He is my father.','👨 かれは おとうさん',['👩 かのじょは おかあさん','👴 かれは おじいさん','🧑‍🏫 かれは せんせい']),
+ H('She is my grandmother.','👵 かのじょは おばあさん',['👩 かのじょは おかあさん','👧 かのじょは いもうと','👴 かれは おじいさん']),
+ M_('She is my sister.','かのじょは わたしの しまい（おねえさん・いもうと）です。',['かれは わたしの きょうだいです。','わたしは おねえさんです。','かのじょは わたしの ともだちです。'],'👧','She ＝「かのじょ（その おんなの ひと）」。'),
+ F('___ is my mother.','She',['He','I','You'],'👩','かのじょは わたしの おかあさんです。','おんなの ひとは She。'),
+ F('___ is my brother.','He',['She','I','You'],'👦','かれは わたしの きょうだいです。','おとこの ひとは He。'),
+ F('She ___ my teacher.','is',['am','are','do'],'🧑‍🏫','かのじょは わたしの せんせいです。','She の あとは is。'),
+ F('He ___ hungry.','is',['am','are','a'],'👦😋','かれは おなかが すいています。','He の あとも is。'),
+ F('I am Yuki. You ___ my friend.','are',['am','is','do'],'🧑‍🤝‍🧑','わたしは ユキ。あなたは わたしの ともだち。','I am / you are / he is の セット。'),
+ F('Is she your mother? — Yes, she ___.','is',['am','are','do'],'👩','はい、そうです。','Is she ～? には Yes, she is.'),
+ M_('Is he your grandfather?','かれは あなたの おじいさんですか？',['かれは わたしの おじいさんです。','あなたは おじいさんですか？','おじいさんは どこ？'],'👴','Is he ～? ＝「かれは ～ですか？」'),
+ J('かのじょは ねむいです。','She is sleepy.',['She am sleepy.','She are sleepy.','He is sleepy.'],'👧😪','She には is。'),
+ J('かれは わたしの せんせいです。','He is my teacher.',['He are my teacher.','She is my teacher.','He my teacher is.'],'🧑‍🏫','He には is。'),
+ H('She is a baby.','👶 かのじょは あかちゃん',['👵 かのじょは おばあさん','👦 かれは おとこのこ','👩 かのじょは おかあさん'])]},
+
+{g:4,name:"まいにち ＋ I play / eat / Do you ～?",icon:'⚽',
+ point:'うごきの ことば（<b>play</b> する・<b>eat</b> たべる・<b>drink</b> のむ・<b>read</b> よむ）は I の すぐ あと。<br><b>I play soccer.</b>　しつもんは <b>Do you ～?</b><br><b>I am play</b> は まちがい！ am と いっしょには つかわない。',
+ ex:[['I play soccer.','わたしは サッカーを します。','⚽'],['I drink milk.','わたしは ぎゅうにゅうを のみます。','🥛'],['Do you read books?','ほんを よみますか？','📚']],
+ words:WL(`play|プレイ|（スポーツを）する・あそぶ|🎮
+ eat|イート|たべる|🍙
+ drink|ドリンク|のむ|🥤
+ study|スタディ|べんきょうする|📖
+ watch|ウォッチ|（テレビなどを）みる|📺
+ read|リード|よむ|📚
+ sleep|スリープ|ねる|😴
+ soccer|サッカー|サッカー|⚽
+ tennis|テニス|テニス|🎾
+ baseball|ベースボール|やきゅう|⚾`),
+ gram:[
+ H('I play soccer.','⚽ サッカーを する',['🎾 テニスを する','⚾ やきゅうを する','📺 テレビを みる']),
+ H('I drink milk.','🥛 ぎゅうにゅうを のむ',['🍙 ごはんを たべる','🧃 ジュースを のむ','📚 ほんを よむ']),
+ M_('I watch TV.','わたしは テレビを みます。',['わたしは テレビが すきです。','わたしは テレビを もっています。','テレビを みますか？'],'📺','watch ＝「（テレビなどを）みる」。'),
+ F('I ___ tennis.','play',['eat','drink','read'],'🎾','わたしは テニスを します。','スポーツを「する」は play。'),
+ F('I ___ bread.','eat',['drink','play','watch'],'🍞','わたしは パンを たべます。','たべる は eat。'),
+ F('I ___ books.','read',['watch','eat','play'],'📚','わたしは ほんを よみます。','よむ は read。'),
+ F('I ___ English.（べんきょう）','study',['play','drink','watch'],'📖','わたしは えいごを べんきょうします。','べんきょうする は study。'),
+ F('___ you play baseball?','Do',['Are','Am','Is'],'⚾','やきゅうを しますか？','うごきの ことばの しつもんは Do。'),
+ F("I ___ watch TV.（みない）","don't",['am not','can','do'],'📺','わたしは テレビを みません。',"「～しない」は don't。"),
+ M_("I don't drink juice.",'わたしは ジュースを のみません。',['わたしは ジュースを のみます。','ジュースを のみますか？','わたしは ジュースが すきです。'],'🧃',"don't ＝「～しない」。"),
+ J('わたしは サッカーを します。','I play soccer.',['I am play soccer.','I soccer play.','I am soccer.'],'⚽','I am play は まちがい！ うごきの ことばの ときは am は いらない。'),
+ J('あなたは ほんを よみますか？','Do you read books?',['Are you read books?','You read books?','Do you books read?'],'📚','Do you の あとに うごきの ことば。')]},
+
+/* ---------- ステップ3 ---------- */
+{g:6,name:"ようび ＋ What day is it? / on ～",icon:'📅',
+ point:'ようびは <b>Monday</b>（げつ）〜 <b>Sunday</b>（にち）。さいしょは かならず 大文字！<br>「なんようび？」は <b>What day is it today?</b>　こたえは <b>It\'s Monday.</b><br>「～ようびに」は <b>on</b>：<b>I play soccer on Sunday.</b>',
+ ex:[['What day is it today?','きょうは なんようび？','📅'],["It's Friday.",'きんようびです。','5️⃣'],['I play soccer on Sunday.','にちようびに サッカーを します。','⚽']],
+ words:WL(`Monday|マンデイ|げつようび|🌙
+ Tuesday|チューズデイ|かようび|🔥
+ Wednesday|ウェンズデイ|すいようび|💧
+ Thursday|サーズデイ|もくようび|🌳
+ Friday|フライデイ|きんようび|💰
+ Saturday|サタデイ|どようび|🪨
+ Sunday|サンデイ|にちようび|☀️
+ today|トゥデイ|きょう|📍`),
+ gram:[
+ H("It's Monday.",'🌙 げつようび',['☀️ にちようび','💧 すいようび','💰 きんようび']),
+ H('I play soccer on Saturday.','⚽ どようびに サッカー',['⚽ にちようびに サッカー','🎾 どようびに テニス','⚽ きんようびに サッカー']),
+ M_('What day is it today?','きょうは なんようびですか？',['きょうは なんにちですか？','いま なんじですか？','きょうは どんな てんきですか？'],'📅','What day ＝「なんようび」。'),
+ M_('I study English on Wednesday.','すいようびに えいごを べんきょうします。',['もくようびに えいごを べんきょうします。','すいようびに えいごが すきです。','まいにち えいごを べんきょうします。'],'📖','on Wednesday ＝「すいようびに」。'),
+ F("It's ___.（きんようび）",'Friday',['Monday','Sunday','Thursday'],'💰','きんようびです。','きんようびは Friday。'),
+ F('I go to the park ___ Sunday.','on',['in','at','under'],'🌳','にちようびに こうえんに いきます。','ようびの まえは on。'),
+ F('What ___ is it today?','day',['time','color','name'],'📅','きょうは なんようびですか？','ようびを きくときは What day。'),
+ F("It's ___.（もくようび）",'Thursday',['Tuesday','Thirsday','Saturday'],'🌳','もくようびです。','もくようびは Thursday。Tuesday（かようび）と にているので ちゅうい！'),
+ J('きょうは かようびです。',"It's Tuesday today.",["It's tuesday today.","It Tuesday today.","Is it Tuesday today."],'🔥','ようびは 大文字で はじめる。It\'s ＝ It is。'),
+ J('どようびに テニスを します。','I play tennis on Saturday.',['I play tennis in Saturday.','I tennis play on Saturday.','On I play tennis Saturday.'],'🎾','ようびの まえは on。'),
+ H('Do you play soccer on Monday? — No, on Tuesday.','🙅 かようびに する',['🙆 げつようびに する','🙅 すいようびに する','🙆 まいにち する']),
+ J('きょうは なんようびですか？','What day is it today?',['What time is it today?','What is day today?','Day what is it today?'],'📅','What day が さいしょ。')]},
+
+{g:6,name:"じかん ＋ What time is it? / at ～",icon:'⏰',
+ point:'「なんじ？」は <b>What time is it?</b>　こたえは <b>It\'s seven.</b>（7じ）<br>「～じに」は <b>at</b>：<b>I get up at six.</b><br>あさ <b>in the morning</b>／よる <b>at night</b>',
+ ex:[['What time is it?','いま なんじ？','⏰'],["It's eight o'clock.",'8じです。','🕗'],['I eat lunch at twelve.','12じに ひるごはんを たべます。','🍱']],
+ words:WL(`morning|モーニング|あさ|🌅
+ afternoon|アフタヌーン|ごご|🌤️
+ night|ナイト|よる|🌃
+ breakfast|ブレックファスト|あさごはん|🍳
+ lunch|ランチ|ひるごはん|🍱
+ dinner|ディナー|ばんごはん|🍛
+ get up|ゲット アップ|おきる|⏰
+ homework|ホームワーク|しゅくだい|📝`),
+ gram:[
+ H("It's seven o'clock.",'🕖 7じ',['🕗 8じ','🕚 11じ','🕕 6じ']),
+ H('I get up at six.','⏰ 6じに おきる',['⏰ 7じに おきる','😴 6じに ねる','🍳 6じに あさごはん']),
+ M_('What time is it?','いま なんじですか？',['きょうは なんようびですか？','なんじに おきますか？','じかんが ありますか？'],'⏰','What time ＝「なんじ」。'),
+ M_('I eat breakfast at seven.','7じに あさごはんを たべます。',['7じに ばんごはんを たべます。','あさごはんを 7こ たべます。','7じに おきます。'],'🍳','at seven ＝「7じに」。'),
+ F('I go to bed ___ nine.','at',['on','in','to'],'😴','9じに ねます。','じこくの まえは at。'),
+ F("It's ten ___.",'o\'clock',['time','clock','at'],'🕙','10じ ちょうどです。',"「ちょうど」の ときは o'clock を つけて いえるよ。"),
+ F('What ___ is it?','time',['day','color','old'],'⏰','いま なんじですか？','なんじ ＝ What time。'),
+ F('I do my ___ at five.','homework',['lunch','morning','dinner'],'📝','5じに しゅくだいを します。','しゅくだい は homework。'),
+ F('I watch TV ___ the evening.','in',['at','on','to'],'📺','ゆうがたに テレビを みます。','in the morning / in the evening の かたちで おぼえよう。'),
+ J('わたしは 6じに おきます。','I get up at six.',['I get up on six.','I six get up at.','I am get up at six.'],'⏰','じこくの まえは at。'),
+ J('12じに ひるごはんを たべます。','I eat lunch at twelve.',['I eat dinner at twelve.','I eat lunch on twelve.','I lunch eat at twelve.'],'🍱','ひるごはん ＝ lunch。'),
+ H('What time do you eat dinner? — At seven.','🍛 7じに ばんごはん',['🍳 7じに あさごはん','🍛 6じに ばんごはん','🍱 7じに ひるごはん'])]},
+
+{g:6,name:"てんき・きせつ ＋ How's the weather?",icon:'🌦️',
+ point:'てんきを きくときは <b>How\'s the weather?</b>　こたえは <b>It\'s sunny.</b>（はれ）<br>てんきの ことばは 「<b>sun</b> → sunny」のように <b>y</b> が つく ものが おおいよ。<br>きせつ：<b>spring / summer / fall / winter</b>',
+ ex:[["How's the weather?",'どんな てんき？','🌦️'],["It's rainy.",'あめです。','🌧️'],['I like summer.','なつが すきです。','🏖️']],
+ words:WL(`sunny|サニー|はれ|☀️
+ rainy|レイニー|あめ|🌧️
+ cloudy|クラウディ|くもり|☁️
+ snowy|スノーウィ|ゆき|🌨️
+ windy|ウィンディ|かぜが つよい|🌬️
+ spring|スプリング|はる|🌸
+ summer|サマー|なつ|🏖️
+ fall|フォール|あき|🍁
+ winter|ウィンター|ふゆ|⛄`),
+ gram:[
+ H("It's sunny.",'☀️ はれ',['🌧️ あめ','☁️ くもり','🌨️ ゆき']),
+ H("It's cloudy and windy.",'☁️🌬️ くもりで かぜが つよい',['☀️🌬️ はれで かぜが つよい','☁️🌧️ くもりで あめ','🌨️🌬️ ゆきで かぜが つよい']),
+ M_("How's the weather?",'どんな てんきですか？',['なんじですか？','げんきですか？','なんようびですか？'],'🌦️',"How's the weather? ＝「どんな てんき？」"),
+ M_('I like winter.','わたしは ふゆが すきです。',['わたしは なつが すきです。','ふゆは さむいです。','ゆきが すきです。'],'⛄','winter ＝ ふゆ。'),
+ F("It's ___ today.（あめ）",'rainy',['rain','sunny','snow'],'🌧️','きょうは あめです。','てんきを いうときは rainy（y が つく）。'),
+ F("How's the ___?",'weather',['time','day','season'],'🌦️','どんな てんきですか？','てんき ＝ weather。'),
+ F("It's hot in ___.",'summer',['winter','spring','snowy'],'🏖️','なつは あついです。','あつい きせつ → summer。'),
+ F("It's cold in ___.",'winter',['summer','sunny','fall'],'⛄','ふゆは さむいです。','さむい きせつ → winter。'),
+ F('I see flowers in ___.','spring',['winter','cloudy','fall'],'🌸','はるに はなを みます。','はなが さく きせつ → spring。'),
+ J('きょうは ゆきです。',"It's snowy today.",["It's snow today.","Is snowy today.","It snowy is today."],'🌨️','てんきは snowy。'),
+ J('わたしは あきが すきです。','I like fall.',['I like fell.','I am like fall.','I fall like.'],'🍁','あき ＝ fall（autumn とも いう）。'),
+ H("It's rainy. I don't like rainy days.",'🌧️🙅 あめの日は すきじゃない',['🌧️🙆 あめの日が すき','☀️🙅 はれの日は すきじゃない','☁️🙅 くもりは すきじゃない'])]},
+
+{g:6,name:"まち ＋ Where is ～? / next to",icon:'🏙️',
+ point:'ばしょを きくときは <b>Where is the ～?</b><br>こたえ：<b>It\'s next to the ～.</b>（～の となり）／<b>near the ～</b>（～の ちかく）<br>みちあんない：<b>Go straight.</b>（まっすぐ）<b>Turn right / left.</b>（みぎ／ひだりに まがる）',
+ ex:[['Where is the park?','こうえんは どこ？','🌳'],["It's next to the station.",'えきの となりです。','🚉'],['Turn left.','ひだりに まがって。','⬅️']],
+ words:WL(`park|パーク|こうえん|🌳
+ station|ステイション|えき|🚉
+ hospital|ホスピタル|びょういん|🏥
+ library|ライブラリー|としょかん|📚
+ zoo|ズー|どうぶつえん|🦒
+ shop|ショップ|おみせ|🏪
+ right|ライト|みぎ|➡️
+ left|レフト|ひだり|⬅️`),
+ gram:[
+ H('Where is the library?','📚 としょかんは どこ？',['🏥 びょういんは どこ？','📚 としょかんに いく','🌳 こうえんは どこ？']),
+ H('Turn right.','➡️ みぎに まがって',['⬅️ ひだりに まがって','⬆️ まっすぐ いって','🛑 とまって']),
+ H("It's next to the hospital.",'🏥 びょういんの となり',['🏥 びょういんの なか','🚉 えきの となり','🏥 びょういんの まえ']),
+ M_('Go straight.','まっすぐ いってください。',['みぎに まがってください。','とまってください。','もどってください。'],'⬆️','straight ＝「まっすぐ」。'),
+ M_('The zoo is near the park.','どうぶつえんは こうえんの ちかくです。',['どうぶつえんは こうえんの なかです。','こうえんは どうぶつえんの なかです。','どうぶつえんが すきです。'],'🦒🌳','near ＝「～の ちかく」。'),
+ F('___ is the station?','Where',['What','How','Who'],'🚉','えきは どこですか？','「どこ」は Where。'),
+ F("It's next ___ the shop.",'to',['at','on','of'],'🏪','おみせの となりです。','「となり」は next to で ひとまとまり。'),
+ F('Turn ___.（ひだり）','left',['right','straight','lift'],'⬅️','ひだりに まがって。','ひだり ＝ left。'),
+ F('Go ___.（まっすぐ）','straight',['right','turn','next'],'⬆️','まっすぐ いって。','まっすぐ ＝ straight。'),
+ J('こうえんは どこですか？','Where is the park?',['Where the park is?','What is the park?','Where is park the?'],'🌳','Where is の あとに ばしょ。'),
+ J('としょかんは えきの となりです。','The library is next to the station.',['The library is next the station.','The library next to is the station.','The station is next to the library.'],'📚🚉','next to の あとに めじるしの ばしょ。'),
+ H('Go straight and turn left. The zoo is on your right.','⬆️⬅️ どうぶつえんは みぎがわ',['⬆️➡️ どうぶつえんは ひだりがわ','⬆️⬅️ どうぶつえんは ひだりがわ','⬅️⬆️ こうえんは みぎがわ'])]},
+
+{g:6,name:"しょうらいの ゆめ ＋ I want to be ～",icon:'🧑‍🚀',
+ point:'「～に なりたい」は <b>I want to be a ～.</b><br>きくときは <b>What do you want to be?</b><br>しごとの ことばの まえには <b>a / an</b> を わすれずに（<b>an</b> astronaut）。',
+ ex:[['What do you want to be?','なにに なりたい？','💭'],['I want to be a soccer player.','サッカーせんしゅに なりたい。','⚽'],['She wants to be a doctor.','かのじょは いしゃに なりたい。','👩‍⚕️']],
+ words:WL(`doctor|ドクター|いしゃ|🧑‍⚕️
+ nurse|ナース|かんごし|👩‍⚕️
+ pilot|パイロット|パイロット|🧑‍✈️
+ police officer|ポリス オフィサー|けいさつかん|👮
+ farmer|ファーマー|のうか|🧑‍🌾
+ singer|シンガー|かしゅ|🎤
+ soccer player|サッカー プレイヤー|サッカーせんしゅ|⚽
+ astronaut|アストロノート|うちゅうひこうし|🧑‍🚀
+ vet|ヴェット|じゅうい|🐾`),
+ gram:[
+ H('I want to be a pilot.','🧑‍✈️ パイロットに なりたい',['🧑‍⚕️ いしゃに なりたい','🧑‍✈️ パイロットが すき','🎤 かしゅに なりたい']),
+ H('I want to be a vet. I like animals.','🐾 じゅういに なりたい・どうぶつが すき',['🧑‍⚕️ いしゃに なりたい・どうぶつが すき','🐾 じゅういに なりたい・どうぶつが にがて','🧑‍🌾 のうかに なりたい・やさいが すき']),
+ M_('What do you want to be?','あなたは なにに なりたいですか？',['あなたは なにが ほしいですか？','あなたは なにを していますか？','あなたの しごとは なんですか？'],'💭','want to be ＝「～に なりたい」。'),
+ M_('He wants to be a singer.','かれは かしゅに なりたいです。',['かれは かしゅです。','かれは うたが すきです。','かのじょは かしゅに なりたいです。'],'🎤','He の ときは want が wants に なる。'),
+ F('I want to ___ a doctor.','be',['is','am','do'],'🧑‍⚕️','いしゃに なりたいです。','「～に なりたい」は want to be。'),
+ F('I want to be ___ astronaut.','an',['a','the','is'],'🧑‍🚀','うちゅうひこうしに なりたいです。','astronaut は「ア」の音 → an。'),
+ F('What do you want to ___?','be',['is','do','are'],'💭','なにに なりたいですか？','What do you want to be? で ひとまとまり。'),
+ F('I want to be a ___.（けいさつかん）','police officer',['pilot','farmer','nurse'],'👮','けいさつかんに なりたいです。','けいさつかん ＝ police officer。'),
+ F('She ___ to be a nurse.','wants',['want','is','be'],'👩‍⚕️','かのじょは かんごしに なりたいです。','She・He の ときは wants（s が つく）。'),
+ J('わたしは サッカーせんしゅに なりたいです。','I want to be a soccer player.',['I want be a soccer player.','I want to a soccer player.','I am want to be a soccer player.'],'⚽','want to be ＋ a ＋ しごと。'),
+ J('あなたは なにに なりたいですか？','What do you want to be?',['What do you want?','What are you want to be?','What you want to be?'],'💭','What do you want to be? で ひとまとまり。'),
+ H('My brother wants to be a farmer.','👦🧑‍🌾 おにいさんは のうかに なりたい',['👦🧑‍🌾 おにいさんは のうか','👧🧑‍🌾 いもうとは のうかに なりたい','👦🎤 おにいさんは かしゅに なりたい'])]},
+
+{g:6,name:"ほしい・したい ＋ I want ～ / I want to ～",icon:'🎁',
+ point:'「～が ほしい」は <b>I want ～.</b>　「～したい」は <b>I want to ＋ うごき.</b><br><b>I want a ball.</b>（ボールが ほしい）／ <b>I want to play.</b>（あそびたい）<br>きくときは <b>Do you want ～?</b>／<b>What do you want?</b>',
+ ex:[['I want a new ball.','あたらしい ボールが ほしい。','⚽'],['I want to go to the zoo.','どうぶつえんに いきたい。','🦒'],['What do you want for your birthday?','たんじょうびに なにが ほしい？','🎂']],
+ words:WL(`want|ウォント|ほしい|🙏
+ new|ニュー|あたらしい|✨
+ water|ウォーター|みず|💧
+ ice cream|アイスクリーム|アイスクリーム|🍦
+ pizza|ピザ|ピザ|🍕
+ hamburger|ハンバーガー|ハンバーガー|🍔
+ game|ゲーム|ゲーム|🎮
+ birthday|バースデイ|たんじょうび|🎂
+ go|ゴー|いく|🚶`),
+ gram:[
+ H('I want ice cream.','🍦 アイスが ほしい',['🍦 アイスが すき','🍕 ピザが ほしい','🍦 アイスを たべた']),
+ H('I want to go to the park.','🌳 こうえんに いきたい',['🌳 こうえんが すき','🏫 がっこうに いきたい','🌳 こうえんに いった']),
+ M_('Do you want some water?','みずが ほしいですか？',['みずが すきですか？','みずを のみましたか？','みずは どこですか？'],'💧','Do you want ～? ＝「～が ほしいですか？」'),
+ M_('I want to play a game.','ゲームを したいです。',['ゲームが ほしいです。','ゲームが すきです。','ゲームを しています。'],'🎮','want to ＋ うごき ＝「～したい」。'),
+ F('I ___ a new bag.','want',['am','like to','want to'],'🎒','あたらしい かばんが ほしい。','もの が ほしい ときは want ＋ もの。'),
+ F('I want ___ eat pizza.','to',['a','is','at'],'🍕','ピザを たべたい。','「～したい」は want to ＋ うごき。'),
+ F('What do you ___ for your birthday?','want',['want to','like','are'],'🎂','たんじょうびに なにが ほしい？','What do you want ～? で「なにが ほしい？」'),
+ F('___ you want a hamburger?','Do',['Are','Is','Can'],'🍔','ハンバーガーが ほしいですか？','want の しつもんは Do you ～?'),
+ F("I don't want ___ go.",'to',['a','am','the'],'🙅','いきたくない。',"don't want to ＝「～したくない」。"),
+ J('わたしは あたらしい ゲームが ほしいです。','I want a new game.',['I want new a game.','I want to a new game.','I am want a new game.'],'🎮','want ＋ a ＋ new ＋ もの。'),
+ J('わたしは どうぶつえんに いきたいです。','I want to go to the zoo.',['I want go to the zoo.','I want to the zoo.','I go to want the zoo.'],'🦒','want to ＋ go。'),
+ H("I'm hungry. I want a hamburger.",'😋🍔 おなかが すいた・ハンバーガーが ほしい',['😪🍔 ねむい・ハンバーガーが ほしい','😋🍕 おなかが すいた・ピザが ほしい','😋🍔 おなかが すいた・ハンバーガーが すき'])]},
+
+{g:6,name:"いま している ＋ I am ～ing",icon:'🏃',
+ point:'「いま ～している」は <b>am / is / are ＋ うごき ing</b>。<br><b>I am running.</b>（いま はしっている）<b>She is reading.</b><br>きくときは <b>What are you doing?</b>（なに してるの？）<br>run → run<b>n</b>ing、write → writ<b>ing</b>（e を とる）に ちゅうい。',
+ ex:[['What are you doing?','なに してるの？','❓'],['I am eating lunch.','ひるごはんを たべているよ。','🍱'],['He is playing soccer.','かれは サッカーを しているよ。','⚽']],
+ words:WL(`clean|クリーン|そうじする|🧹
+ walk|ウォーク|あるく|🚶
+ write|ライト|かく（字を）|✍️
+ draw|ドロー|かく（絵を）|🖍️
+ talk|トーク|はなす|🗣️
+ listen|リッスン|きく|👂
+ wash|ウォッシュ|あらう|🧼
+ doing|ドゥーイング|している|❓`),
+ gram:[
+ H('I am running.','🏃 いま はしっている',['🚶 いま あるいている','🏃 はしるのが すき','🏃 はしれる']),
+ H('She is drawing a picture.','👧🖍️ かのじょは え を かいている',['👦🖍️ かれは え を かいている','👧✍️ かのじょは 字を かいている','👧🖼️ かのじょは え が すき']),
+ M_('What are you doing?','あなたは いま なにを していますか？',['あなたは なにが すきですか？','あなたは なにが ほしいですか？','あなたは なにを しましたか？'],'❓','What are you doing? ＝「いま なに してる？」'),
+ M_('He is washing the dishes.','かれは おさらを あらっています。',['かれは おさらを あらいました。','かれは おさらが すきです。','かのじょは おさらを あらっています。'],'🍽️','is ＋ ～ing ＝「いま ～している」。'),
+ F('I am ___ to music.','listening',['listen','listens','listened'],'🎧','おんがくを きいています。','am の あとは ～ing。'),
+ F('She ___ walking.','is',['am','are','do'],'🚶','かのじょは あるいています。','She の あとは is。'),
+ F('They ___ playing soccer.','are',['is','am','do'],'⚽','かれらは サッカーを しています。','They（かれら）の あとは are。'),
+ F('I am ___ a letter.（write）','writing',['writeing','write','writting'],'✍️','てがみを かいています。','write は e を とって writing。'),
+ F('He is ___ fast.（run）','running',['runing','run','runs'],'🏃','かれは はやく はしっています。','run は n を かさねて running。'),
+ J('わたしは いま しゅくだいを しています。','I am doing my homework.',['I doing my homework.','I am do my homework.','I am my homework doing.'],'📝','am ＋ doing。'),
+ J('あなたは テレビを みていますか？','Are you watching TV?',['Do you watching TV?','You are watching TV?','Are you watch TV?'],'📺','しつもんは Are が さいしょ、うごきは ～ing。'),
+ H('My father is talking on the phone.','👨📞 おとうさんは でんわで はなしている',['👩📞 おかあさんは でんわで はなしている','👨📺 おとうさんは テレビを みている','👨📞 おとうさんは でんわが すき'])]},
+
+{g:6,name:"さそう・おねがい ＋ Let's / Can I ～?",icon:'🤝',
+ point:'さそうときは <b>Let\'s ～.</b>（～しよう）：<b>Let\'s play soccer!</b><br>「～しても いい？」は <b>Can I ～?</b>：<b>Can I use your pen?</b>　こたえは <b>Sure.</b>（いいよ）<br>おねがいは <b>Please ～.</b>（～してください）',
+ ex:[["Let's play together!",'いっしょに あそぼう！','🤝'],['Can I use your eraser?','けしゴム かりても いい？','✏️'],['Sure. Here you are.','いいよ。はい どうぞ。','👍']],
+ words:WL(`together|トゥゲザー|いっしょに|🤝
+ use|ユーズ|つかう|🛠️
+ open|オープン|あける|📖
+ close|クローズ|しめる|🚪
+ help|ヘルプ|てつだう|🙌
+ sure|シュア|いいよ|👍
+ sorry|ソーリー|ごめんなさい|🙇
+ please|プリーズ|おねがい|🙏`),
+ gram:[
+ H("Let's play soccer!",'⚽ サッカーを しよう！',['⚽ サッカーが すき','⚽ サッカーを している','🎾 テニスを しよう！']),
+ H('Can I use your pen? — Sure.','🖊️🙆 ペン かしてもいい？—いいよ',['🖊️🙅 ペン かしてもいい？—だめ','📏🙆 じょうぎ かしてもいい？—いいよ','🖊️🙆 ペンが ほしい？—うん']),
+ M_('Please open the window.','まどを あけてください。',['まどを しめてください。','まどを あけても いいですか？','まどを あけよう。'],'🪟','Please ～ ＝「～してください」。'),
+ M_('Can I help you?','てつだいましょうか？',['てつだって くれますか？','たすけて！','あなたは てつだえますか？'],'🙌','Can I help you? ＝「てつだいましょうか？」（おみせでも よく つかう）'),
+ F("___ go to the park!",'Let\'s',['Can','Please','Do'],'🌳','こうえんに いこう！',"さそうときは Let's。"),
+ F('___ I sit here?','Can',['Let\'s','Do','Am'],'🪑','ここに すわっても いいですか？','「～しても いい？」は Can I ～?'),
+ F('___ close the door.','Please',['Can','Let\'s','Are'],'🚪','ドアを しめてください。','おねがいは Please。'),
+ F("Let's play ___!",'together',['to','sure','please'],'🤝','いっしょに あそぼう！','いっしょに ＝ together。'),
+ F("I'm ___. — That's OK.",'sorry',['sure','please','happy'],'🙇','ごめんなさい。—いいよ。',"ごめんなさい ＝ I'm sorry。"),
+ J('いっしょに べんきょうしよう！',"Let's study together!",["Let's together study!","Let study together!","Can study together!"],'📖',"Let's ＋ うごき ＋ together。"),
+ J('あなたの ボールを つかっても いいですか？','Can I use your ball?',['Can you use my ball?','I can use your ball?','Can I your ball use?'],'⚽','Can I ＋ うごき ＋ もの。'),
+ H("Can I have some water, please? — Sure. Here you are.",'💧🙆 みずを ください—はい どうぞ',['💧🙅 みずを ください—ないよ','🧃🙆 ジュースを ください—はい どうぞ','💧🙆 みずは どこ？—あそこ'])]},
+
+{g:6,name:"サッカーえいご ＋ He plays（s が つく）",icon:'🥅',
+ point:'he・she・ひとりの 人 が しゅごの ときは、うごきの ことばに <b>s</b>：<b>He plays soccer.</b><br>have → <b>has</b>、go → <b>goes</b>、watch → <b>watches</b><br>しつもんは <b>Does he ～?</b>　こたえは <b>Yes, he does.</b>',
+ ex:[['He plays soccer.','かれは サッカーを する。','⚽'],['She runs fast.','かのじょは はしるのが はやい。','🏃‍♀️'],['Does he kick well? — Yes, he does.','かれは キックが うまい？—うん。','🦵']],
+ words:WL(`ball|ボール|ボール|⚽
+ goal|ゴール|ゴール|🥅
+ pass|パス|パス（する）|↗️
+ kick|キック|ける|🦵
+ shoot|シュート|シュート（する）|💥
+ team|チーム|チーム|👥
+ coach|コーチ|コーチ|🧑‍🏫
+ win|ウィン|かつ|🏆
+ fast|ファスト|はやく|💨`),
+ gram:[
+ H('He plays soccer.','👦⚽ かれは サッカーを する',['👧⚽ かのじょは サッカーを する','👦⚾ かれは やきゅうを する','👦⚽ かれは サッカーが すき']),
+ H('She kicks the ball.','👧🦵⚽ かのじょは ボールを ける',['👦🦵⚽ かれは ボールを ける','👧🙌⚽ かのじょは ボールを なげる','👧⚽ かのじょは ボールが ほしい']),
+ M_('Our team wins!','ぼくたちの チームが かつ！',['ぼくたちの チームが まける！','あいての チームが かつ！','ぼくたちの チームは つよい！'],'🏆','win ＝「かつ」。'),
+ M_('Does she play soccer? — Yes, she does.','かのじょは サッカーを する？—うん、するよ。',['かのじょは サッカーが すき？—うん。','かのじょは サッカーが できる？—うん。','かれは サッカーを する？—うん。'],'👧⚽','Does ～? には Yes, she does. で こたえる。'),
+ F('He ___ the ball.（ける）','kicks',['kick','kicking','is kick'],'🦵','かれは ボールを ける。','He の ときは kick に s。'),
+ F('My coach ___ a whistle.（もっている）','has',['have','haves','is'],'🧑‍🏫','コーチは ふえを もっている。','he・she の ときは have → has。'),
+ F('She ___ fast.','runs',['run','running','are run'],'💨','かのじょは はやく はしる。','She の ときは run に s。'),
+ F('___ he play soccer?','Does',['Do','Is','Are'],'⚽','かれは サッカーを しますか？','he・she の しつもんは Does。'),
+ F('He ___ to soccer practice on Sunday.','goes',['go','gos','going'],'🚶','かれは にちようびに サッカーの れんしゅうに いく。','go は goes に なる。'),
+ J('かのじょは よい パスを します。','She makes good passes.',['She make good passes.','She is make good passes.','She good passes makes.'],'↗️','She の ときは make に s。'),
+ J('かれは シュートが うまいですか？','Does he shoot well?',['Do he shoot well?','Does he shoots well?','Is he shoot well?'],'💥','Does の あとの うごきは s なし！'),
+ H('My brother plays on a team. He shoots well.','👦⚽ おにいさんは チームで プレー・シュートが うまい',['👦⚽ おにいさんは チームで プレー・パスが うまい','👧⚽ おねえさんは チームで プレー・シュートが うまい','👦🏀 おにいさんは バスケ・シュートが うまい'])]},
+
+{g:6,name:"きのうの こと ＋ I played / went",icon:'📆',
+ point:'「～した」（むかしの こと）は うごきの ことばの かたちが かわる。<br>ふつうは <b>ed</b>：play → <b>played</b>、watch → <b>watched</b><br>とくべつな かたち：go → <b>went</b>、eat → <b>ate</b>、see → <b>saw</b>、have → <b>had</b><br>きくときは <b>Did you ～?</b>　こたえは <b>Yes, I did.</b>',
+ ex:[['I played soccer yesterday.','きのう サッカーを した。','⚽'],['I went to the zoo.','どうぶつえんに いった。','🦒'],['Did you eat breakfast? — Yes, I did.','あさごはん たべた？—うん。','🍳']],
+ words:WL(`yesterday|イエスタデイ|きのう|⏪
+ played|プレイド|（スポーツを）した|⚽
+ went|ウェント|いった|🚶
+ ate|エイト|たべた|🍽️
+ saw|ソー|みた|👀
+ had|ハッド|もっていた・たべた|🤲
+ watched|ウォッチト|（テレビを）みた|📺
+ fun|ファン|たのしい|🎉`),
+ gram:[
+ H('I played soccer yesterday.','⚽⏪ きのう サッカーを した',['⚽ いつも サッカーを する','⚽ いま サッカーを している','🎾⏪ きのう テニスを した']),
+ H('I went to the park.','🌳🚶 こうえんに いった',['🌳 こうえんに いきたい','🌳 こうえんが すき','🏫🚶 がっこうに いった']),
+ M_('I ate pizza for dinner.','ばんごはんに ピザを たべた。',['ばんごはんに ピザを たべたい。','ばんごはんは ピザが すき。','ひるごはんに ピザを たべた。'],'🍕','ate ＝ eat の「たべた」。'),
+ M_('It was fun!','たのしかった！',['たのしい！','たのしみ！','つまらなかった。'],'🎉','was ＝ is の むかしの かたち。'),
+ F('I ___ TV last night.','watched',['watch','watching','watchs'],'📺','きのうの よる テレビを みた。','watch に ed で watched。'),
+ F('I ___ to the zoo yesterday.','went',['go','goed','going'],'🦒','きのう どうぶつえんに いった。','go の「いった」は went（とくべつ）。'),
+ F('I ___ a lion at the zoo.','saw',['see','seed','seeing'],'🦁','どうぶつえんで ライオンを みた。','see の「みた」は saw。'),
+ F('___ you play soccer yesterday?','Did',['Do','Are','Was'],'⚽','きのう サッカーを した？','むかしの しつもんは Did。'),
+ F('Did you eat lunch? — Yes, I ___.','did',['do','was','ate'],'🍱','ひるごはん たべた？—うん。','Did ～? には Yes, I did. で こたえる。'),
+ J('わたしは きのう しゅくだいを しました。','I did my homework yesterday.',['I do my homework yesterday.','I did my homework tomorrow.','I doed my homework yesterday.'],'📝','do の「した」は did。'),
+ J('あなたは パンダを みましたか？','Did you see a panda?',['Did you saw a panda?','Do you see a panda?','You saw a panda?'],'🐼','Did の あとは もとの かたち（see）！'),
+ H('I went to the beach. I swam in the sea. It was fun!','🏖️🏊🎉 うみで およいで たのしかった',['🏖️🏊😢 うみで およいで つまらなかった','🏊🎉 プールで およいで たのしかった','🏖️🏊 うみで およぎたい'])]},
+
+/* ---------- 決勝トーナメント ---------- */
+{g:5,name:"準決勝：Are と Do の つかいわけ",icon:'⚔️',wordsFrom:[1,9],
+ point:'「～です」（きもち・ようす・だれ）は <b>am / are / is</b>。<br>「～する・～すき」（うごき）は <b>do</b> を つかう。<br><b>Are you hungry?</b>（ようす）／ <b>Do you like dogs?</b>（すき）<br><b>I am like</b> ✕　<b>Are you play</b> ✕',
+ ex:[['Are you hungry?','おなかが すいていますか？','😋'],['Do you like dogs?','いぬが すきですか？','🐶'],['Do you play tennis?','テニスを しますか？','🎾']],
+ gram:[
+ F('___ you happy?','Are',['Do','Can','Is'],'😊','あなたは うれしいですか？','happy は ようす → Are。'),
+ F('___ you like dogs?','Do',['Are','Am','Is'],'🐶','いぬが すきですか？','like は うごき → Do。'),
+ F('___ you Ken?','Are',['Do','Can','Am'],'👦','あなたは ケンですか？','だれ？を きく → Are。'),
+ F('___ you play tennis?','Do',['Are','Am','Is'],'🎾','テニスを しますか？','play は うごき → Do。'),
+ F('Are you tired? — Yes, I ___.','am',['do','are','is'],'😩','はい、つかれています。','Are で きかれたら am で こたえる。'),
+ F('Do you eat eggs? — No, I ___.',"don't",["am not","aren't","can't"],'🥚','いいえ、たべません。',"Do で きかれたら do / don't で こたえる。"),
+ F('I ___ sleepy.','am',['do','like','play'],'😪','わたしは ねむいです。','ようす → am。'),
+ F('I ___ cats.','like',['am','am like','is'],'🐱','わたしは ねこが すきです。','すき は like だけ。am は いらない。'),
+ M_('She is my sister. She can swim.','かのじょは わたしの しまいです。かのじょは およげます。',['かれは わたしの きょうだいです。かれは およげます。','かのじょは わたしの しまいです。かのじょは およげません。','わたしは しまいです。わたしは およげます。'],'👧🏊','She ＝ おんなの ひと、can ＝ できる。'),
+ J('わたしは サッカーが すきです。','I like soccer.',['I am like soccer.','I am soccer.','I do like soccer is.'],'⚽','I am like は ✕。'),
+ J('あなたは おなかが すいていますか？','Are you hungry?',['Do you hungry?','Do you are hungry?','You are hungry.'],'😋','hungry は ようす → Are。'),
+ J('あなたは テレビを みますか？','Do you watch TV?',['Are you watch TV?','You are watch TV?','Do you are watch TV?'],'📺','watch は うごき → Do。'),
+ J('かれは おとうさんです。テニスが できます。','He is my father. He can play tennis.',['He are my father. He can plays tennis.','He is my father. He is can play tennis.','He my father. He can tennis play.'],'👨🎾','He is ～. と He can ～. の くみあわせ。'),
+ H('Do you like cake? — No, I don\'t.','🙅🍰 すきじゃない',['🙆🍰 すき','🙆🍞 パンが すき','🙅🍞 パンは すきじゃない'])]},
+
+{g:5,name:"決勝：ぜんぶの まとめ（リスニング強化）",icon:'🏆',wordsFrom:'all',mixHard:true,
+ point:'これまでの 文の しくみ ぜんぶ！<br><b>I am / you are / he・she is</b>　<b>like・play・have</b>　<b>can</b>　<b>in・on・under</b><br>しつもんは <b>Is / Are / Do / Can</b> の どれで はじまるか が カギ。<b>but</b> ＝「でも」。',
+ ex:[["I can swim, but I can't skate.",'およげるけど、スケートは できない。','🏊⛸️'],['This is my mother. She is a teacher.','これは わたしの おかあさん。せんせいです。','👩🧑‍🏫'],["I like red. I don't like black.",'あかは すき。くろは すきじゃない。','🔴⚫']],
+ gram:[
+ H('This is my mother. She is a teacher.','👩🧑‍🏫 おかあさんは せんせい',['👨🧑‍🏫 おとうさんは せんせい','👩🍳 おかあさんは りょうりが とくい','👧🧑‍🏫 しまいは せんせい']),
+ H("I can swim, but I can't skate.",'🏊🙆 ⛸️🙅 およげる・スケートは できない',['🏊🙅 ⛸️🙆 およげない・スケートは できる','🏊🙆 ⛸️🙆 どっちも できる','🏊🙅 ⛸️🙅 どっちも できない'],'but ＝「でも」。'),
+ H('Where is my bag? — It is under the chair.','🎒🪑 いすの した',['🎒🪑 いすの うえ','🎒📦 はこの なか','🎒🛏️ ベッドの した']),
+ H("I like red. I don't like black.",'🔴🙆 ⚫🙅',['🔴🙅 ⚫🙆','🔴🙆 ⚫🙆','🟢🙆 ⚫🙅']),
+ H('How many dogs? — Four dogs.','🐶×4 4ひき',['🐶×5 5ひき','🐶×3 3びき','🐱×4 ねこ 4ひき']),
+ H('Can you cook? — Yes, I can.','🍳🙆 りょうり できる',['🍳🙅 りょうり できない','🎤🙆 うたえる','🏊🙆 およげる']),
+ J('いもうとは ねこを 2ひき かっています。' ,'My sister has two cats.',['My sister have two cats.','My sister has two cat.','My sister is two cats.'],'👧🐱🐱','sister（3にんしょう）の ときは have が has に なるよ。2ひき だから cats。'),
+ J('わたしの おとうさんは やきゅうが できます。','My father can play baseball.',['My father can plays baseball.','My father is can play baseball.','My father can baseball play.'],'👨⚾','can の あとは うごきの ことば そのまま。')]}
+];
+
+/* ===== データの準備 ===== */
+const WD={},WDS=[],ITEM={};
+STAGES.forEach((st,si)=>{
+ WDS[si]=[];(st.words||[]).forEach(w=>{const id='w:'+w.en;WD[id]={...w,si,id};WDS[si].push(id);ITEM[id]={t:'w',si}});
+ st.gram.forEach((it,j)=>{it.id='g'+si+'-'+j;it.si=si;ITEM[it.id]={t:'g',si,it}});
+});
+STAGES.forEach((st,si)=>{
+ st.wl=st.wordsFrom==='all'?Object.keys(WD):st.wordsFrom?st.wordsFrom.flatMap(i=>WDS[i]):WDS[si];
+ st.gq=st.mixHard?[...STAGES.slice(0,si).flatMap(s=>s.gram.slice(-4)),...st.gram]:st.gram;
+});
+
+/* ===== 問題オブジェクトをつくる ===== */
+function mkQ(o){const ch=shuffle([o.a,...o.w]);return {...o,choices:ch,ans:ch.indexOf(o.a),aText:o.a}}
+/* ===== つづり（4択）：正しいつづり／ぬけた1文字 ===== */
+const SND={a:'ア',b:'ブ',c:'ク',d:'ドゥ',e:'エ',f:'フ',g:'グ',h:'ハ',i:'イ',j:'ジュ',k:'ク',l:'ル',m:'ム',n:'ヌ',o:'オ',p:'プ',r:'ル',s:'ス',t:'トゥ',u:'ア',v:'ヴ',w:'ウ',x:'クス',y:'イ',z:'ズ'};
+const VOW='aeiou',CONS='bcdfgklmnprstw';
+const canSpell=id=>/^[a-z]{3,5}$/.test(WD[id].en);
+const REAL='can cut cot bad bag big hat hit pin pan tan sun son dig fan fun map mop ran sit set sat rod fox sin bat but bit cap top tip net nut not men man mat met lot lit bus fit fat pet pot hug hog log leg lag win wet wig'.split(' ');
+const ALLW=()=>new Set([...Object.values(WD).map(w=>w.en),...REAL]);
+function misspell(w){
+ const out=new Set(),all=ALLW(),L=w.split('');
+ const tries=[
+  ()=>{const i=L.findIndex(c=>VOW.includes(c));if(i<0)return null;const r=L.slice();r[i]=pick([...VOW].filter(v=>v!==L[i]));return r.join('')},
+  ()=>w.includes('c')?w.replace('c','k'):w.includes('k')?w.replace('k','c'):null,
+  ()=>w+w.slice(-1),
+  ()=>{const i=R(1,L.length-1);return L.filter((_,j)=>j!==i).join('')},
+  ()=>{const i=R(0,L.length-2);const r=L.slice();[r[i],r[i+1]]=[r[i+1],r[i]];return r.join('')},
+  ()=>{const i=L.findIndex((c,j)=>j>0&&!VOW.includes(c));if(i<0)return null;const r=L.slice();r[i]=pick([...CONS].filter(v=>v!==L[i]));return r.join('')},
+  ()=>w+'e'];
+ for(let n=0;n<80&&out.size<3;n++){const s=pick(tries)();if(s&&s!==w&&s.length>=2&&!all.has(s))out.add(s)}
+ return [...out];
+}
+function spellQ(id){
+ const w=WD[id],base={id,after:w.en,label:`${w.en}（${w.kana}）のつづり`,tag:'つづり'};
+ const spelled=w.en.split('').map(c=>`${c}（${SND[c]||c}）`).join(' → ');
+ if(R(0,1)===0){
+  return mkQ({...base,q:`<span class="emo">${esc(w.e)}</span>${sayBtn(w.en,'sayb sm')}<div class="ql">${esc(w.ja)}（${esc(w.kana)}）― ただしい つづりは？</div>`,a:w.en,w:misspell(w.en),t:12,grid:true,auto:w.en,
+   reveal:`<b class="en">${esc(w.en)}</b>（${esc(w.kana)}）${sayBtn(w.en)}`,x:`1文字ずつ 音を つなげると… ${spelled}`});
+ }
+ const L=w.en.split(''),vi=L.map((c,i)=>VOW.includes(c)?i:-1).filter(i=>i>=0);
+ const i=vi.length&&R(0,2)?pick(vi):R(0,L.length-1),c=L[i];
+ const pool=(VOW.includes(c)?[...VOW]:[...CONS]).filter(x=>x!==c);
+ const masked=esc(L.slice(0,i).join(''))+'<span class="blank">？</span>'+esc(L.slice(i+1).join(''));
+ return mkQ({...base,q:`<span class="emo">${esc(w.e)}</span><span class="enw">${masked}</span>${sayBtn(w.en,'sayb sm')}<div class="ql">${esc(w.ja)} ― ？に 入る 文字は？</div>`,a:c,w:shuffle(pool).slice(0,3),t:12,grid:true,auto:w.en,
+  reveal:`<b class="en">${esc(w.en)}</b>（${esc(w.kana)}）${sayBtn(w.en)}`,x:`「${c}」は「${SND[c]||c}」の 音。${spelled}`});
+}
+function wordQ(id,forceSpell){
+ const w=WD[id],L=effLv();
+ if(canSpell(id)&&(forceSpell||(L>=4&&R(0,3)===0)))return spellQ(id);
+ const types=L<=2?['listen','read']:L===3?['listen','read','pic']:['listen','read','pic','ja2en'];
+ const ty=pick(types),rich=L<=3;
+ const oth=shuffle(WDS[w.si].filter(k=>k!==id)).slice(0,3).map(k=>WD[k]);
+ const lab=x=>rich?`${x.e} ${x.ja}`:x.ja;
+ const base={id,after:w.en,label:`${w.en}（${w.kana}）`,reveal:`<b class="en">${esc(w.en)}</b>（${esc(w.kana)}）＝ ${esc(w.e)} ${esc(w.ja)} ${sayBtn(w.en)}`};
+ if(ty==='listen')return mkQ({...base,q:`${sayBtn(w.en,'sayb')}<div class="ql">きこえた ことばの いみは？</div>`,a:lab(w),w:oth.map(lab),t:13,auto:w.en,tag:'たんご・きく'});
+ if(ty==='read')return mkQ({...base,q:`<span class="enw">${esc(w.en)}</span>${sayBtn(w.en,'sayb sm')}<div class="ql">いみは どれ？</div>`,a:lab(w),w:oth.map(lab),t:10,auto:L<=2?w.en:null,tag:'たんご・いみ'});
+ if(ty==='pic')return mkQ({...base,q:`<span class="emo">${esc(w.e)}</span><div class="ql">${esc(w.ja)} ― えいごで いうと？</div>`,a:w.en,w:oth.map(x=>x.en),t:10,grid:true,tag:'たんご'});
+ return mkQ({...base,q:`<div class="jaw">${esc(w.ja)}</div><div class="ql">えいごで いうと？</div>`,a:w.en,w:oth.map(x=>x.en),t:10,grid:true,tag:'たんご'});
+}
+function gramQ(it){
+ const L=effLv(),x=it.x||'';
+ if(it.k==='hear')return mkQ({id:it.id,q:`${sayBtn(it.s,'sayb')}<div class="ql">なんて いってる？</div>`,a:it.a,w:it.w,t:16,auto:it.s,after:it.s,tag:'文・きく',label:'🔊 '+it.s,x,
+  reveal:`<b class="en">${esc(it.s)}</b> ${sayBtn(it.s)}<br>＝ ${esc(it.a)}`});
+ if(it.k==='mean')return mkQ({id:it.id,q:`<span class="emo">${esc(it.e)}</span><span class="sent">${esc(it.s)}</span> ${sayBtn(it.s,'sayb sm')}<div class="ql">いみは どれ？</div>`,a:it.a,w:it.w,t:16,auto:L<=3?it.s:null,after:it.s,tag:'文・いみ',label:it.s,x,
+  reveal:`<b class="en">${esc(it.s)}</b> ${sayBtn(it.s)}<br>＝ ${esc(it.a)}`});
+ if(it.k==='fill'){const full=it.s.replace('___',it.a).replace(/（.*?）/g,'');
+  return mkQ({id:it.id,q:`<span class="emo">${esc(it.e)}</span><div class="sent">${esc(it.s).replace('___','<span class="blank">？</span>')}</div>${L<=3?`<div class="jah">${esc(it.ja)}</div>`:''}<div class="ql">＿ に 入る ことばは？</div>`,a:it.a,w:it.w,t:14,grid:true,after:full,tag:'文のしくみ',label:it.s,x,
+  reveal:`<b class="en">${esc(full)}</b> ${sayBtn(full)}<br>＝ ${esc(it.ja)}`})}
+ return mkQ({id:it.id,q:`<span class="emo">${esc(it.e)}</span>「${esc(it.ja)}」<div class="ql">えいごで ただしい 文は？</div>`,a:it.a,w:it.w,t:20,sent:true,after:it.a,tag:'文のしくみ',label:it.ja,x,
+  reveal:`<b class="en">${esc(it.a)}</b> ${sayBtn(it.a)}`});
+}
+const qFromId=id=>ITEM[id].t==='w'?wordQ(id):gramQ(ITEM[id].it);
+
+/* ===== レベル調整（国語・算数と同じしくみ） ===== */
+const LV_NAME=['とてもやさしい','やさしい','ふつう','むずかしい','とてもむずかしい'];
+const LV_T=[1.6,1.3,1.0,0.9,0.8];
+function stageGramQ(si,used){
+ const st=STAGES[si],n=st.gq.length,L=effLv(),span=Math.ceil(n*0.6);
+ let idx=[...Array(n).keys()];
+ if(L<=2)idx=idx.slice(0,span);else if(L>=4)idx=idx.slice(n-span);
+ let c=idx.filter(i=>!used.has(i));if(!c.length)c=[...Array(n).keys()].filter(i=>!used.has(i));if(!c.length)c=[...Array(n).keys()];
+ const i=pick(c);used.add(i);return gramQ(st.gq[i]);
+}
+function stageWordQ(si,used){const wl=STAGES[si].wl;let c=wl.filter(k=>!used.has(k));if(!c.length)c=wl;const id=pick(c);used.add(id);return wordQ(id)}
+function reviewQ(){
+ const weak=Object.keys(S.weak||{}).filter(id=>ITEM[id]&&ITEM[id].si<=M.si&&!M.usedR.has(id));
+ let id,tag;
+ if(weak.length){id=pick(weak);tag='にがて こくふく'}
+ else{const c=Object.keys(ITEM).filter(id=>ITEM[id].si<M.si&&!M.usedR.has(id));if(!c.length)return null;id=pick(c);tag='ふくしゅう'}
+ M.usedR.add(id);
+ if(ITEM[id].t==='w'&&!M.spellDone&&canSpell(id)){M.spellDone=true;const q=spellQ(id);q.tag=tag+'・つづり';return q}
+ const q=qFromId(id);q.tag=tag;return q;
+}
+
+/* ===== セーブ ===== */
+let S;
+function load(){try{S=JSON.parse(localStorage.getItem('eigoWC_v1'))}catch(e){}if(!S||typeof S.pts!=='number')S={name:'あざみ野FC',pts:START_PTS,cleared:{},best:{},slow:false,lv:3,weak:{}};if(!S.lv)S.lv=3;if(!S.weak)S.weak={};if(!S.crest)S.crest={...DEF_CREST}}
+function save(){try{localStorage.setItem('eigoWC_v1',JSON.stringify(S))}catch(e){}}
+
+
+/* ===== 入口サイト連携 ===== */
+const HUB={keys:{sansu:'calcWC_v1',kokugo:'kotobaWC_v1',eigo:'eigoWC_v1'},me:'eigo'};
+function hubDay(){const d=new Date();return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`}
+function hubMark(){try{const h=JSON.parse(localStorage.getItem('wcHub_v1'))||{days:{}};const t=hubDay();h.days[t]=h.days[t]||{};h.days[t][HUB.me]=true;localStorage.setItem('wcHub_v1',JSON.stringify(h))}catch(e){}}
+function hubIsBehind(){try{const o=[];for(const k in HUB.keys){if(k===HUB.me)continue;const s=JSON.parse(localStorage.getItem(HUB.keys[k]));o.push(s&&typeof s.pts==='number'?s.pts:1440)}return o.length>0&&o.every(p=>p>S.pts)}catch(e){return false}}
+
+function hubUnlocked(){try{const h=JSON.parse(localStorage.getItem('wcHub_v1'))||{};if(h.lockOn===false)return true;return !!(h.unlock&&h.unlock[hubDay()])}catch(e){return true}}
+function hubLockMsg(){overlay(`<div style="font-size:44px">📚🔒</div><h3 style="margin:6px 0">学校と塾の宿題がおわったらキックオフ！</h3><p class="mut">宿題がおわったら、おうちの人に入口の「宿題チェック」でロックを解除してもらおう。</p><div class="row" style="justify-content:center;gap:8px"><button class="btn" onclick="closeOver()">とじる</button><a class="btn pri" href="../index.html" style="text-decoration:none">入口へ</a></div>`)}
+
+const oppBoost=r=>r<=5?2:r<=15?1:0;
+function effLv(){return Math.max(1,Math.min(5,(S.lv||3)+((typeof M!=='undefined'&&M&&!M.rev&&M.orank)?oppBoost(M.orank):0)))}
+
+/* ===== おうちのルール・記録 ===== */
+const RULE={night:20,weekdayMin:60};
+function hubGet(){try{return JSON.parse(localStorage.getItem('wcHub_v1'))||{days:{}}}catch(e){return {days:{}}}}
+function hubPut(h){try{localStorage.setItem('wcHub_v1',JSON.stringify(h))}catch(e){}}
+function hubBlock(){
+  const h=hubGet(),t=hubDay(),d=new Date(),ext=(h.ext&&h.ext[t])||{};
+  if(h.lockOn!==false&&!(h.unlock&&h.unlock[t]))return 'hw';
+  if(d.getHours()>=(ext.night||RULE.night)||d.getHours()<5)return 'night';
+  const wd=d.getDay()>=1&&d.getDay()<=5,used=(h.mins&&h.mins[t])||0;
+  if(wd&&used>=RULE.weekdayMin+(ext.min||0))return 'time';
+  return null;
+}
+function hubBlockMsg(r){
+  if(r==='hw')return hubLockMsg();
+  const m=r==='night'?{i:'🌙',t:'夜8時をすぎたので、今日はおしまい',d:'選手たちはもうねる時間。また明日キックオフしよう！'}:{i:'⏱️',t:'今日は60分プレーしたよ',d:'平日は60分まで。目と頭を休めて、また明日！'};
+  overlay(`<div style="font-size:44px">${m.i}</div><h3 style="margin:6px 0">${m.t}</h3><p class="mut">${m.d}<br>（おうちの人がOKなら、入口のメニューで延長できるよ）</p><div class="row" style="justify-content:center;gap:8px"><button class="btn" onclick="closeOver()">とじる</button><a class="btn pri" href="../index.html" style="text-decoration:none">入口へ</a></div>`);
+}
+function hubAddTime(){try{if(!M||!M.t0)return;const m=(Date.now()-M.t0)/60000;M.t0=0;const h=hubGet(),t=hubDay();h.mins=h.mins||{};h.mins[t]=Math.round(((h.mins[t]||0)+m)*10)/10;hubPut(h)}catch(e){}}
+function hubLog(){try{
+  const strip=x=>String(x||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+  const e={app:HUB.me,at:new Date().toISOString(),day:hubDay(),stage:M.rev?'rev':M.si,stageName:M.rev?'苦手リベンジ':(STAGES[M.si]&&STAGES[M.si].name),leg:M.leg||1,opp:M.opp&&M.opp.name,orank:M.orank,lv:S.lv,eff:effLv(),my:M.my,op:M.op,pk:M.phase==='pk'?M.pkMy:null,res:(M.res||[]).map(x=>x===1?1:0).join(''),secs:(M.times||[]).map(t=>Math.round(t)),min:M.t0?Math.round((Date.now()-M.t0)/600)/100:null,missed:(M.missed||[]).map(q=>strip(q.html||q.label||q.q).slice(0,80))};
+  const L=JSON.parse(localStorage.getItem('wcLog_v1')||'[]');L.push(e);while(L.length>400)L.shift();localStorage.setItem('wcLog_v1',JSON.stringify(L));
+  if(window.claude&&window.claude.use)window.claude.use('db').then(async db=>{if(!db)return;const r=db.doc('logs/'+e.day.replace(/-/g,'')+'_'+HUB.me),sn=await r.get(),d=(sn&&sn.exists&&sn.data())||{};await r.set({app:HUB.me,day:e.day,matches:[...(d.matches||[]),e]})}).catch(()=>{});
+}catch(_){}}
+
+/* ===== ランキング ===== */
+const rankOf=p=>1+TEAMS.filter(t=>t.pts>p).length;
+function oppFor(p){const above=TEAMS.filter(t=>t.pts>p);return above.length?above[above.length-1]:TEAMS.filter(t=>t.pts<=p)[0]}
+const realRank=t=>TEAMS.indexOf(t)+1;
+const starsOf=r=>'★'.repeat(r<=5?5:r<=15?4:r<=25?3:r<=40?2:1);
+const timeFactor=r=>1+0.5*(Math.min(r,50)-1)/49;
+
+/* ===== 画面 ===== */
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));window.scrollTo(0,0)}
+function goHome(){renderHome();show('home')}
+function renderHome(){
+  const r=rankOf(S.pts),o=oppFor(S.pts),or=realRank(o);
+  tname.value=S.name;myRank.textContent=r+'位';myPts.textContent=S.pts.toFixed(2)+' pt';
+  const n=Object.keys(S.cleared).length,wk=Object.keys(S.weak).length;
+  clearInfo.innerHTML=`クリア ${n} / ${STAGES.length}　<span class="lvtag">レベル ${S.lv}：${LV_NAME[S.lv-1]}</span>${wk?`<br>にがてリスト ${wk}こ（ふくしゅうで出るよ）`:''}`;crestHome.innerHTML=crest(40);
+  oFlag.textContent=o.flag;oName.textContent=o.name;oRank.textContent=`FIFAランク ${or}位`;oStars.textContent=starsOf(or);
+  const f=timeFactor(or)*(S.slow?2:1);oTime.textContent=oppBoost(or)?`強豪国！問題のむずかしさ +${oppBoost(or)}`:'';
+  slow.checked=!!S.slow;
+  let h='',g=0;
+  STAGES.forEach((s,i)=>{
+    if(s.g!==g){g=s.g;h+=`<div class="grade">${g===3?'🟢 ステップ1：です・すき・かず':g===4?'🔵 ステップ2：できる・もってる・する':g===6?'🟣 ステップ3：いつ・どこ・いま・きのう':'🏆 決勝トーナメント'}</div>`}
+    const open=i===0||S.cleared[i-1]||S.cleared[i];const done=S.cleared[i];const b=S.best[i];
+    h+=`<button class="stage ${open?'':'lock'} ${done?'done':''} ${s.g===5?'fin':''}" ${open?`onclick="startMatch(${i})"`:'disabled'}><span class="no">${done?'✓':i+1}</span><span class="t"><b>${s.icon} ${s.name}</b><span class="st">${open?(b?`ベスト ${b}`:'まだ挑戦していない'):'🔒 前のステージに勝つとひらく'}</span></span><span>${open?'▶':''}</span></button>`;
+  });
+  stages.innerHTML=h;
+}
+tname.addEventListener('change',()=>{S.name=tname.value.trim()||'あざみ野FC';save()});
+slow.addEventListener('change',()=>{S.slow=slow.checked;save();renderHome()});
+function resetAll(){overlay(`<h3>さいしょからやり直す？</h3><p class="mut">ランキング・クリア記録・にがてリストが消えます（チーム名とエンブレムはそのまま）。</p><div class="row" style="justify-content:center"><button class="btn" onclick="closeOver()">やめる</button><button class="btn pri" onclick="doReset()">やり直す</button></div>`)}
+function doReset(){S={name:S.name,crest:S.crest,pts:START_PTS,cleared:{},best:{},slow:S.slow,lv:3,weak:{}};save();closeOver();renderHome()}
+function showRanking(){
+  const list=TEAMS.map(t=>({...t})).concat([{name:esc(S.name),flag:crestInline(18),pts:S.pts,me:true}]).sort((a,b)=>b.pts-a.pts);
+  rtable.innerHTML=list.map((t,i)=>`<tr class="${t.me?'me':''}" ${t.me?'id="meRow"':''}><td class="r">${i+1}</td><td>${t.flag} ${t.name}</td><td class="p">${t.pts.toFixed(2)}</td></tr>`).join('');
+  show('ranking');setTimeout(()=>{const m=document.getElementById('meRow');m&&m.scrollIntoView({block:'center'})},50);
+}
+function overlay(h){overBox.innerHTML=h;over.classList.add('on')}
+function closeOver(){over.classList.remove('on')}
+
+/* ===== エンブレム設定 ===== */
+let CT=null;
+function openCrest(){CT={...S.crest};drawCrest()}
+function drawCrest(){
+  overlay(`<h3 style="margin:0 0 6px">エンブレムを変える</h3><div style="display:flex;justify-content:center;margin:6px 0">${crest(80,CT)}</div>
+  <div class="mut">地の色</div><div class="sw">${C1S.map(c=>`<button style="background:${c}" class="${c===CT.c1?'sel':''}" onclick="CT.c1='${c}';drawCrest()" aria-label="地の色"></button>`).join('')}</div>
+  <div class="mut">文字とふちの色</div><div class="sw">${C2S.map(c=>`<button style="background:${c}" class="${c===CT.c2?'sel':''}" onclick="CT.c2='${c}';drawCrest()" aria-label="文字の色"></button>`).join('')}</div>
+  <div class="mut">エンブレムの文字（3文字まで）</div><input class="cfield" id="ctxt" maxlength="3" value="${esc(CT.txt)}" oninput="CT.txt=[...this.value].slice(0,3).join('');document.querySelector('#overBox svg').outerHTML=crest(80,CT)">
+  <div class="row" style="justify-content:center;margin-top:14px"><button class="btn" onclick="closeOver()">やめる</button><button class="btn" onclick="CT={...DEF_CREST};drawCrest()">もとにもどす</button><button class="btn pri" onclick="S.crest={...CT};save();closeOver();renderHome()">決定</button></div>`);
+}
+
+/* ===== 試合 ===== */
+let M=null,TI=null;
+const CM_OK=['ゴーーール！','見事なシュート！','ネットをゆらした！','英語の力でゴール！','ナイス連携！'];
+const CM_NG=['うわっ、失点…','カウンターをくらった…','相手にボールをうばわれた…'];
+function startMatch(si){
+  {const _b=hubBlock();if(_b)return hubBlockMsg(_b)}
+  const opp=oppFor(S.pts),st=STAGES[si];
+  const hasReview=si>0||Object.keys(S.weak).some(id=>ITEM[id]&&ITEM[id].si<=si);
+  const k=hasReview?R(2,3):0;const pos=new Set(shuffle([...Array(10).keys()]).slice(0,k));
+  M={si,opp,orank:realRank(opp),i:0,my:0,op:0,res:[],missed:[],phase:'reg',pkI:0,pkMy:0,ht:false,locked:true,ratios:[],times:[],tos:0,pos,used:new Set(),usedW:new Set(),usedR:new Set()};
+  crestMatch.innerHTML=crest(28);
+  mMy.textContent=S.name;mOp.textContent=opp.name;mOpF.textContent=opp.flag;sMy.textContent=0;sOp.textContent=0;comm.textContent='';
+  ball.style.left='50%';show('match');
+  const wl=WDS[si].length?WDS[si]:st.wl.slice(0,0);
+  overlay(`<div style="font-size:40px">${crestInline(40)} vs ${opp.flag}</div><h3 style="margin:6px 0">${esc(S.name)} vs ${opp.name}</h3>
+  <p class="mut" style="margin:4px 0">ステージ${si+1}「${esc(st.name)}」<br>FIFAランク${M.orank}位 ${starsOf(M.orank)}　レベル ${effLv()}：${LV_NAME[effLv()-1]}${oppBoost(M.orank)?`（強豪国でむずかしさ+${oppBoost(M.orank)}）`:''}<br>全10問（前半5・後半5）　正解＝ゴール！${k?`<br>ふくしゅう問題が ${k}問 まざるよ`:''}</p>
+  <div class="board2"><div style="font-weight:800;margin-bottom:2px">📋 作戦ボード（文のしくみ）</div><div class="pt">${st.point}</div>
+  ${st.ex.map(e=>`<div class="exl" data-say="${esc(e[0])}"><span class="e">${esc(e[2])}</span><span class="s"><b class="en">${esc(e[0])}</b><span>${esc(e[1])}</span></span>🔊</div>`).join('')}
+  ${wl.length?`<div style="font-weight:800;margin-top:8px">🔤 このステージの ことば（タップで きける）</div><div class="wchips">${wl.map(id=>{const w=WD[id];return `<button data-say="${esc(w.en)}">${esc(w.e)} <b>${esc(w.en)}</b></button>`}).join('')}</div>`:''}</div>
+  <button class="btn pri" onclick="closeOver();nextQ()">キックオフ！</button>`);
+}
+function nextQ(){
+  if(M.phase==='reg'){
+    if(M.i===5&&!M.ht){M.ht=true;overlay(`<h3>ハーフタイム</h3><div class="big">${M.my} - ${M.op}</div><button class="btn pri" onclick="closeOver();nextQ()">後半キックオフ</button>`);return}
+    if(M.i===10){
+      if(M.my!==M.op)return finish();
+      M.phase='pk';overlay(`<h3>同点！PK戦へ</h3><p class="mut">3問中2問正解で勝ち！</p><button class="btn pri" onclick="closeOver();nextQ()">PKスタート</button>`);return;
+    }
+  }else{
+    if(M.pkMy>=2||(M.pkI-M.pkMy)>=2||M.pkI>=3)return finish();
+  }
+  let q=null;
+  if(M.phase==='reg'&&M.pos.has(M.i))q=reviewQ();
+  if(!q)q=(M.phase==='reg'&&M.i%2===0)?stageWordQ(M.si,M.usedW):stageGramQ(M.si,M.used);
+  q.limit=Math.max(8,Math.round(q.t*timeFactor(M.orank)*LV_T[S.lv-1]*(S.slow?2:1)));
+  M.q=q;M.locked=false;
+  halfLab.textContent=M.phase==='pk'?`PK戦 ${M.pkI+1}本目（成功 ${M.pkMy}）`:(M.i<5?'前半':'後半')+` ・ ${M.i+1}問目`;
+  qlab.innerHTML=`じっくり考えてOK`+(q.tag?`<span class="qtag">${q.tag}</span>`:'');
+  document.getElementById('q').innerHTML=q.q;
+  hint.className='hint';hint.textContent='';
+  comm.textContent='';renderDots();renderChoices();startTimer(q.limit);
+  if(q.auto)setTimeout(()=>speak(q.auto),250);
+}
+function renderDots(){
+  let h='';for(let k=0;k<10;k++){const r=M.res[k];h+=`<i class="${r===1?'ok':r===0?'ng':(k===M.i&&M.phase==='reg'?'now':'')}"></i>`}dots.innerHTML=h;
+}
+function renderChoices(){
+  const q=M.q;
+  choices.className='choices'+(q.grid?' grid':q.sent?' sentc':'');
+  choices.innerHTML=q.choices.map((c,i)=>`<button data-i="${i}"><span class="k">${i+1}</span><span>${esc(c)}</span></button>`).join('');
+}
+choices.addEventListener('click',e=>{const b=e.target.closest('button[data-i]');if(b)judge(+b.dataset.i,false)});
+document.addEventListener('keydown',e=>{
+  if(!document.getElementById('match').classList.contains('on')||over.classList.contains('on')||!M)return;
+  if(/^[1-4]$/.test(e.key)){e.preventDefault();judge(+e.key-1,false)}
+  else if(e.key==='Enter'){const n=document.getElementById('nx');if(n){e.preventDefault();n.click()}}
+});
+function startTimer(sec){
+  clearInterval(TI);const end=Date.now()+sec*1000;M.qStart=Date.now();if(!M.t0)M.t0=Date.now();
+  tbar.style.width='0%';
+}
+function markWeak(id,ok){if(!id)return;if(ok){if(S.weak[id]){S.weak[id]--;if(S.weak[id]<=0)delete S.weak[id]}}else S.weak[id]=Math.min(3,(S.weak[id]||0)+1)}
+function judge(idx,timeout){
+  if(!M||M.locked)return;M.locked=true;clearInterval(TI);
+  const pk=M.phase==='pk',ok=idx===M.q.ans;
+  if(!pk){const used=timeout?M.q.limit:Math.min(M.q.limit,(Date.now()-M.qStart)/1000);M.times.push(used);M.ratios.push(used/M.q.limit);if(timeout)M.tos++}
+  const btns=choices.querySelectorAll('button');
+  btns.forEach((b,i)=>{b.disabled=true;if(i===M.q.ans)b.classList.add('right');else if(i===idx)b.classList.add('wrong');else b.classList.add('dim')});
+  markWeak(M.q.id,ok);save();
+  if(M.q.after)speak(M.q.after);
+  if(ok){
+    if(pk)M.pkMy++;else{M.my++;M.res[M.i]=1}
+    comm.textContent=pick(CM_OK);ball.style.left='96%';
+    goaltxt.classList.remove('go');void goaltxt.offsetWidth;goaltxt.classList.add('go');
+    if(M.q.reveal){hint.className='hint rv';hint.innerHTML=M.q.reveal}
+  }else{
+    if(!pk){M.op++;M.res[M.i]=0}
+    M.missed.push(M.q);
+    comm.textContent=timeout?'時間切れ！相手ボールに…':(pk?'PK失敗…':pick(CM_NG));ball.style.left=pk?'50%':'4%';
+    hint.className='hint exp';hint.innerHTML=(M.q.reveal||'')+(M.q.x?`<br>💡 ${esc(M.q.x)}`:'');
+  }
+  sMy.textContent=M.my;sOp.textContent=M.op;renderDots();
+  const adv=()=>{ball.style.left='50%';if(pk)M.pkI++;else M.i++;nextQ()};
+  if(ok)setTimeout(adv,1900);
+  else{const nb=document.createElement('button');nb.className='nextbtn';nb.id='nx';nb.textContent='つぎへ ▶';nb.onclick=adv;choices.appendChild(nb);nb.scrollIntoView({block:'nearest'})}
+}
+function quitMatch(){overlay(`<h3>試合をやめる？</h3><p class="mut">この試合は記録されません。</p><div class="row" style="justify-content:center"><button class="btn" onclick="closeOver()">つづける</button><button class="btn pri" onclick="clearInterval(TI);hubAddTime();M=null;closeOver();goHome()">やめる</button></div>`)}
+function finish(){
+  hubLog();hubAddTime();
+  clearInterval(TI);
+  const o=M.opp,before=S.pts,rb=rankOf(before);
+  let res=M.my>M.op?'win':M.my<M.op?'loss':(M.pkMy>=2?'pkwin':'pkloss');
+  const Wt={win:1,pkwin:.75,pkloss:.5,loss:0}[res];
+  const We=1/(Math.pow(10,-(before-o.pts)/600)+1);
+  let dlt=K*(Wt-We);if(dlt<0)dlt*=.5;dlt=Math.round(dlt*100)/100;
+  let boost=false;if(dlt>0&&hubIsBehind()){dlt=Math.round(dlt*1.2*100)/100;boost=true}hubMark();
+  S.pts=Math.round((before+dlt)*100)/100;const ra=rankOf(S.pts);
+  const won=res==='win'||res==='pkwin';
+  const sc=`${M.my}-${M.op}`+(M.phase==='pk'?`（PK ${M.pkMy}/${M.pkI}）`:'');
+  if(won){S.cleared[M.si]=true;const prev=S.best[M.si];const cur=M.my-M.op;if(!prev||cur>(+prev.split('-')[0]-+prev.split('-')[1]))S.best[M.si]=`${M.my}-${M.op}`}
+  const nq=M.times.length,acc=M.res.filter(x=>x===1).length/Math.max(1,nq);
+  const avgT=M.times.reduce((a,b)=>a+b,0)/Math.max(1,nq),avgR=M.ratios.reduce((a,b)=>a+b,0)/Math.max(1,nq);
+  const lvBefore=S.lv;let lvMsg='';
+  if(acc>=0.9&&avgR<0.45)S.lv=Math.min(5,S.lv+1);
+  else if(acc<=0.3)S.lv=Math.max(1,S.lv-2);
+  else if(acc<=0.5||M.tos>=3||(acc<0.7&&avgR>0.75))S.lv=Math.max(1,S.lv-1);
+  if(S.lv>lvBefore)lvMsg=`余裕があったので、つぎはレベルアップ！（${LV_NAME[S.lv-1]}）`;
+  else if(S.lv<lvBefore)lvMsg=`つぎは少しやさしくするよ（${LV_NAME[S.lv-1]}）。問題をやさしめにするね`;
+  else lvMsg=`ちょうどいいレベル。このまま（${LV_NAME[S.lv-1]}）`;
+  save();
+  const passed=TEAMS.filter(t=>t.pts<=S.pts&&t.pts>before);
+  const title={win:'🏆 勝利！',pkwin:'🏆 PK戦で勝利！',pkloss:'😣 PK戦で負け…',loss:'😢 負け…'}[res];
+  let h=`<h2>${title}</h2><div class="mut">vs ${o.flag} ${o.name}（FIFAランク${M.orank}位）</div><div class="big">${sc}</div>
+  <div class="delta ${dlt>=0?'up':'down'}">${dlt>=0?'+':''}${dlt.toFixed(2)} pt${boost?' 🚀追い上げ×1.2':''}</div>
+  <div style="margin-top:6px">世界ランキング <b>${rb}位 → ${ra}位</b>${ra<rb?' ⬆️':''}</div>`;
+  if(passed.length)h+=`<div class="mut" style="margin-top:4px">${passed.map(t=>t.flag+t.name).join('、')} をぬいた！</div>`;
+  if(ra===1&&rb!==1)h+=`<div class="big" style="font-size:26px;color:var(--g1)">🌍 世界ランキング1位！</div>`;
+  if(won&&M.si<STAGES.length-1&&!S.best[M.si+1])h+=`<div class="mut" style="margin-top:6px">ステージ${M.si+2}「${esc(STAGES[M.si+1].name)}」がひらいた！</div>`;
+  if(won&&M.si===STAGES.length-1)h+=`<div class="big" style="font-size:24px;color:#7c3aed">🏆 決勝で勝利！ワールドカップ優勝！</div>`;
+  if(!won)h+=`<div class="mut" style="margin-top:6px">相手より多くゴールすれば勝ち。もう一度チャレンジ！</div>`;
+  const no=oppFor(S.pts);h+=`<div class="mut" style="margin-top:8px">つぎのあいて：${no.flag} ${no.name}（${realRank(no)}位）</div>`;
+  h+=`<div class="stat"><span>正答率 <b>${Math.round(acc*100)}%</b></span></div><div style="margin-top:6px"><span class="lvtag">レベル ${S.lv}</span> ${lvMsg}</div>`;
+  if(M.missed.length)h+=`<div class="miss"><b>ふりかえり（🔊 で もう一度 きこう）</b>${M.missed.map(q=>`<div>${esc(q.label)}<br>→ <span class="ma">${esc(q.aText)}</span> ${q.after?sayBtn(q.after):''}${q.x?`<br><span class="me">💡 ${esc(q.x)}</span>`:''}</div>`).join('')}<div class="me" style="border:none">まちがえた問題は「にがてリスト」に入って、つぎの試合の ふくしゅうで また出てくるよ。</div></div>`;
+  else h+=`<div style="margin-top:8px;font-weight:800;color:var(--g1)">パーフェクト！ノーミス！</div>`;
+  resBox.innerHTML=h;M=null;show('result');
+}
+
+load();renderHome();
+window.onSyncRestored=()=>{if(!M){load();renderHome()}};
+</script>
+<script>if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('../sw.js').catch(()=>{}));</script>
+</body>
+</html>

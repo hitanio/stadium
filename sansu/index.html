@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>けいさんワールドカップ</title>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;800&display=swap" rel="stylesheet">
+<style>
+:root{--g1:#0b6b3a;--g2:#0f8a4b;--navy:#0c1b33;--gold:#ffc83d;--red:#e5484d;--ink:#13213a;--card:#fff;--mut:#6b778c}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{font-family:"M PLUS Rounded 1c",system-ui,sans-serif;background:var(--navy);color:var(--ink);font-weight:500}
+.screen{display:none;min-height:100%;max-width:520px;margin:0 auto;padding:14px 14px 28px}
+.screen.on{display:block}
+h1{color:#fff;font-size:22px;margin:4px 0 12px;font-weight:800;letter-spacing:.02em}
+h1 small{display:block;font-size:12px;color:#9fb0cc;font-weight:500;margin-top:2px}
+.card{background:var(--card);border-radius:16px;padding:14px;margin-bottom:12px}
+.team{display:flex;align-items:center;gap:10px}
+.team input{font:inherit;font-weight:800;font-size:17px;border:none;border-bottom:2px dashed #ccd;width:100%;padding:2px 0;color:var(--ink);background:transparent}
+.rankbig{display:flex;align-items:baseline;gap:8px;margin-top:8px}
+.rankbig b{font-size:40px;font-weight:800;color:var(--g1)}
+.mut{color:var(--mut);font-size:13px}
+.vs{background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff}
+.vs .mut{color:#cfe9d9}
+.opp{display:flex;align-items:center;gap:12px;margin-top:6px}
+.flag{font-size:40px;line-height:1}
+.crest{display:inline-block;line-height:0}.crest svg{display:block}
+.lvtag{display:inline-block;background:#c60b1e;color:#ffc400;border-radius:8px;padding:2px 8px;font-size:12px;font-weight:800}
+.wp{font-size:18px;text-align:left;line-height:1.6;font-weight:800}
+.wp .fr{font-size:.95em}
+.stat{display:flex;justify-content:center;gap:14px;margin-top:8px;font-size:14px}.stat b{font-size:18px}
+.oname{font-size:20px;font-weight:800}
+.stars{color:var(--gold);letter-spacing:2px}
+.row{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.btn{font:inherit;font-weight:800;border:none;border-radius:12px;padding:10px 14px;background:#e9eef6;color:var(--ink);cursor:pointer}
+.btn.pri{background:var(--gold);color:#3a2a00}
+.btn.sm{padding:6px 10px;font-size:13px}
+.toggle{display:flex;align-items:center;gap:6px;font-size:13px;color:#cfe9d9}
+.grade{color:#fff;font-weight:800;margin:16px 2px 8px;font-size:15px}
+.stage{display:flex;align-items:center;gap:10px;background:#fff;border-radius:12px;padding:10px 12px;margin-bottom:8px;cursor:pointer;border:none;width:100%;text-align:left;font:inherit}
+.stage .no{width:34px;height:34px;border-radius:50%;background:var(--g2);color:#fff;font-weight:800;display:grid;place-items:center;flex:none}
+.stage .t{flex:1}
+.stage .t b{display:block;font-size:15px}
+.stage .st{font-size:12px;color:var(--mut)}
+.stage.lock{opacity:.45;cursor:not-allowed}
+.stage.lock .no{background:#99a}
+.stage.done .no{background:var(--gold);color:#3a2a00}
+/* match */
+.board{background:#0a1426;color:#fff;border-radius:16px;padding:10px 12px}
+.sc{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;text-align:center}
+.sc .nm{font-size:13px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sc .fl{font-size:28px}
+.sc .num{font-size:38px;font-weight:800;letter-spacing:4px}
+.half{text-align:center;font-size:12px;color:#9fb0cc;margin-top:2px}
+.pitch{position:relative;height:34px;margin-top:8px;border-radius:8px;background:repeating-linear-gradient(90deg,#127a41 0 28px,#0f6e3a 28px 56px);overflow:hidden}
+.pitch:before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:2px solid #ffffff66}
+.goalL,.goalR{position:absolute;top:8px;bottom:8px;width:6px;background:#fff}
+.goalL{left:0}.goalR{right:0}
+.ball{position:absolute;top:50%;left:50%;font-size:20px;transform:translate(-50%,-50%);transition:left .6s cubic-bezier(.3,.8,.4,1)}
+.dots{display:flex;gap:5px;justify-content:center;margin-top:8px}
+.dots i{width:9px;height:9px;border-radius:50%;background:#2a3a58}
+.dots i.ok{background:#3ddc84}.dots i.ng{background:var(--red)}.dots i.now{background:#fff}
+.timer{height:8px;background:#2a3a58;border-radius:4px;margin-top:10px;overflow:hidden}
+.timer div{height:100%;background:var(--gold);width:100%}
+.timer div.low{background:var(--red)}
+.qcard{background:#fff;border-radius:16px;padding:16px 12px;margin-top:12px;text-align:center}
+.qlab{font-size:12px;color:var(--mut)}
+.q{font-size:30px;font-weight:800;margin:8px 0 4px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px;min-height:64px;line-height:1.2}
+.q.small{font-size:20px}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:.8em;line-height:1.05}
+.fr span:first-child{border-bottom:3px solid currentColor;padding:0 4px}
+.w{margin-right:2px}
+.ans{font-size:30px;font-weight:800;min-height:46px;border-radius:10px;background:#f1f5fb;margin-top:8px;padding:4px;color:var(--g1);display:flex;align-items:center;justify-content:center}
+.ans.shake{animation:sh .35s}
+@keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.hint{font-size:12px;color:var(--mut);min-height:16px;margin-top:6px}
+.comm{color:#fff;text-align:center;font-weight:800;min-height:24px;margin-top:10px;font-size:16px}
+.pad{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.pad button{font:inherit;font-weight:800;font-size:24px;padding:12px 0;border-radius:12px;border:none;background:#fff;color:var(--ink);cursor:pointer}
+.pad button.sp{background:#dfe8f5;font-size:18px}
+.pad button.ok{background:var(--gold);grid-column:span 2;font-size:20px}
+.pad button.blank{visibility:hidden}
+.pad button:active{transform:scale(.96)}
+.over{position:fixed;inset:0;background:#0c1b33dd;display:none;align-items:center;justify-content:center;z-index:9;padding:20px}
+.over.on{display:flex}
+.over .box{background:#fff;border-radius:18px;padding:20px;max-width:420px;width:100%;text-align:center}
+.goaltxt{position:fixed;left:0;right:0;top:38%;text-align:center;font-size:56px;font-weight:800;color:var(--gold);text-shadow:0 4px 0 #0008;pointer-events:none;opacity:0;z-index:8}
+.goaltxt.go{animation:gl 1s ease-out}
+@keyframes gl{0%{opacity:0;transform:scale(.4)}25%{opacity:1;transform:scale(1.15)}70%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1)}}
+.res h2{margin:0 0 4px;font-size:26px}
+.big{font-size:44px;font-weight:800;margin:4px 0}
+.delta{font-size:18px;font-weight:800}
+.up{color:var(--g2)}.down{color:var(--red)}
+.miss{text-align:left;margin-top:10px;font-size:15px}
+.miss div{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid #eef}
+.miss .fr{font-size:.85em}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td{padding:7px 6px;border-bottom:1px solid #eef}
+td.r{width:40px;text-align:right;font-weight:800;color:var(--mut)}
+td.p{text-align:right;color:var(--mut);font-size:12px}
+tr.me td{background:#fff3c4;font-weight:800}
+.note{color:#9fb0cc;font-size:11px;margin-top:12px;line-height:1.6}
+.note a{color:#cfe0ff}
+.timer{display:none}
+</style>
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<meta name="theme-color" content="#0c1b33">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="学習スタジアム">
+</head>
+<body>
+
+<!-- HOME -->
+<section id="home" class="screen on">
+  <a href="../index.html" class="hubback" style="display:flex;align-items:center;justify-content:center;gap:8px;background:#fff;color:#0c1b33;font-size:18px;font-weight:800;text-decoration:none;padding:14px 16px;border-radius:14px;margin-bottom:12px;box-shadow:0 3px 0 #0006">🏟️ スタジアム入口へもどる</a>
+  <h1>⚽ けいさんワールドカップ<small>小3〜小4の計算で、世界ランキング1位をめざせ！</small></h1>
+  <div class="card">
+    <div class="team"><span class="crest" id="crestHome"></span><input id="tname" maxlength="12" aria-label="チーム名"></div>
+    <div class="rankbig"><span class="mut">世界ランキング</span><b id="myRank">-</b><span class="mut" id="myPts"></span></div>
+    <div class="mut" id="dayInfo" style="margin-top:6px"></div><div class="row" style="margin-top:6px"><span class="mut" id="clearInfo"></span><button class="btn sm" onclick="showRanking()">ランキング表</button></div>
+  </div>
+  <div class="card vs">
+    <div class="row"><span style="font-weight:800">つぎの対戦あいて</span><input type="checkbox" id="slow" hidden></div>
+    <div class="opp"><span class="flag" id="oFlag"></span><div><div class="oname" id="oName"></div><div class="mut"><span id="oRank"></span>　<span class="stars" id="oStars"></span></div><div class="mut" id="oTime"></div></div></div>
+    <div class="mut" style="margin-top:8px">ステージは「ホーム＆アウェイ」の2試合。合計スコアで上回れば突破！1日3ステージ突破まで（突破するまでは何回でもチャレンジOK）。勝つとポイントが上がり、ランキングが上がるほど強い国が相手になるよ。時間制限はないから、じっくり考えよう。</div>
+  </div>
+  <div id="stages"></div>
+  <div class="row" style="margin-top:14px"><span></span><button class="btn sm" onclick="resetAll()">さいしょからやり直す</button></div>
+  <div class="note">ランキングは FIFA/Coca-Cola 男子世界ランキング（2026年11月18日発表）をもとにしています。21位以下の順位とポイントの一部は概算です。次回の公式更新は2026年12月16日予定。</div>
+</section>
+
+<!-- MATCH -->
+<section id="match" class="screen">
+  <div class="board">
+    <div class="sc">
+      <div><div class="fl" id="crestMatch"></div><div class="nm" id="mMy"></div></div>
+      <div class="num"><span id="sMy">0</span>-<span id="sOp">0</span></div>
+      <div><div class="fl" id="mOpF"></div><div class="nm" id="mOp"></div></div>
+    </div>
+    <div class="half" id="halfLab"></div>
+    <div class="pitch"><div class="goalL"></div><div class="goalR"></div><div class="ball" id="ball">⚽</div></div>
+    <div class="dots" id="dots"></div>
+    <div class="timer"><div id="tbar"></div></div>
+  </div>
+  <div class="qcard">
+    <div class="qlab" id="qlab"></div>
+    <div class="q" id="q"></div>
+    <div class="ans" id="ans"></div>
+    <div class="hint" id="hint"></div>
+  </div>
+  <div class="comm" id="comm"></div>
+  <div class="pad" id="pad"></div>
+  <div style="text-align:center;margin-top:14px"><button class="btn sm" onclick="quitMatch()">試合をやめる</button></div>
+</section>
+
+<!-- RESULT -->
+<section id="result" class="screen">
+  <div class="card res" id="resBox"></div>
+  <button class="btn pri" style="width:100%;padding:14px" onclick="goHome()">ホームへ</button>
+</section>
+
+<!-- RANKING -->
+<section id="ranking" class="screen">
+  <h1>🌍 世界ランキング<small>あなたのチームが入ったランキング</small></h1>
+  <div class="card" style="padding:6px 10px"><table id="rtable"></table></div>
+  <button class="btn pri" style="width:100%;padding:14px" onclick="goHome()">もどる</button>
+</section>
+
+<div class="over" id="over"><div class="box" id="overBox"></div></div>
+<div class="goaltxt" id="goaltxt">GOAL!!</div>
+
+<script>
+/* ===== クラウド保存（アカウントにセーブを保管し、ブラウザの記録が消えても復元） ===== */
+(function(){
+ const KEYS=['calcWC_v1','kotobaWC_v1','eigoWC_v1','wcHub_v1'],TK='wcSyncT_v1';
+ const P=Storage.prototype,orig=P.setItem;let ready=false,timer=null,ref=null;
+ const getT=()=>{try{return JSON.parse(localStorage.getItem(TK))||{}}catch(e){return {}}};
+ const setT=t=>{try{orig.call(localStorage,TK,JSON.stringify(t))}catch(e){}};
+ P.setItem=function(k,v){orig.call(this,k,v);if(ready&&this===window.localStorage&&KEYS.includes(k)){const t=getT();t[k]=Date.now();setT(t);push()}};
+ function push(){clearTimeout(timer);timer=setTimeout(async()=>{if(!ref)return;try{const t=getT(),d={t:{}};KEYS.forEach(k=>{const v=localStorage.getItem(k);if(v!=null){d[k]=v;d.t[k]=t[k]||0}});await ref.set(d)}catch(e){}},1500)}
+ async function start(){
+  for(let i=0;i<100&&!(window.claude&&window.claude.use);i++)await new Promise(r=>setTimeout(r,100));
+  if(!(window.claude&&window.claude.use))return;
+  try{
+   const db=await window.claude.use('db'),user=await window.claude.use('user');if(!db||!user)return;
+   const id=await user.id();if(!id)return;
+   ref=db.doc('data/users/'+id+'/save');
+   const snap=await ref.get();const rd=snap&&(typeof snap.data==='function'?snap.data():(snap.data||snap))||null;
+   const t=getT();let restored=false,needPush=false;
+   KEYS.forEach(k=>{const rt=rd&&rd.t&&rd.t[k]||0,lt=t[k]||0,rv=rd&&rd[k];
+    if(rv!=null&&rt>lt){orig.call(localStorage,k,rv);t[k]=rt;restored=true}
+    else if(localStorage.getItem(k)!=null&&(lt>rt||rv==null)){if(!t[k])t[k]=Date.now();needPush=true}});
+   setT(t);ready=true;
+   if(restored&&typeof window.onSyncRestored==='function')window.onSyncRestored();
+   if(needPush)push();
+  }catch(e){ready=true}
+ }
+ start();
+})();
+
+/* ===== ランキングデータ（2026/11/18発表ベース。21位以下は一部概算） ===== */
+const TEAMS=[
+["スペイン","🇪🇸",2004.48],["アルゼンチン","🇦🇷",1964.95],["フランス","🇫🇷",1950.82],["イングランド","🏴󠁧󠁢󠁥󠁮󠁧󠁿",1938.90],
+["モロッコ","🇲🇦",1809.37],["ポルトガル","🇵🇹",1800.10],["ブラジル","🇧🇷",1796.80],["ベルギー","🇧🇪",1790.37],
+["オランダ","🇳🇱",1782.43],["コロンビア","🇨🇴",1735.90],["ドイツ","🇩🇪",1730.50],["スイス","🇨🇭",1724.00],
+["メキシコ","🇲🇽",1723.64],["イタリア","🇮🇹",1717.20],["クロアチア","🇭🇷",1714.22],["アメリカ","🇺🇸",1713.56],
+["日本","🇯🇵",1684.61],["セネガル","🇸🇳",1648.84],["ノルウェー","🇳🇴",1643.59],["ウルグアイ","🇺🇾",1640.00],
+["デンマーク","🇩🇰",1629.71],["オーストリア","🇦🇹",1605.90],["イラン","🇮🇷",1599.43],["エクアドル","🇪🇨",1590.74],
+["カナダ","🇨🇦",1588.00],["エジプト","🇪🇬",1585.86],["オーストラリア","🇦🇺",1584.00],["アルジェリア","🇩🇿",1574.77],
+["コートジボワール","🇨🇮",1569.32],["韓国","🇰🇷",1567.00],["ナイジェリア","🇳🇬",1563.00],["トルコ","🇹🇷",1556.22],
+["パラグアイ","🇵🇾",1553.60],["スウェーデン","🇸🇪",1549.68],["ウクライナ","🇺🇦",1525.65],["ハンガリー","🇭🇺",1516.43],
+["コンゴ民主共和国","🇨🇩",1506.37],["ポーランド","🇵🇱",1505.86],["ウェールズ","🏴󠁧󠁢󠁷󠁬󠁳󠁿",1504.67],["ギリシャ","🇬🇷",1494.89],
+["スコットランド","🏴󠁧󠁢󠁳󠁣󠁴󠁿",1489.20],["カメルーン","🇨🇲",1485.30],["パナマ","🇵🇦",1481.68],["セルビア","🇷🇸",1477.92],
+["マリ","🇲🇱",1474.14],["スロバキア","🇸🇰",1473.06],["南アフリカ","🇿🇦",1468.88],["ベネズエラ","🇻🇪",1465.87],
+["チリ","🇨🇱",1456.40]
+].map(([name,flag,pts])=>({name,flag,pts}));
+const START_PTS=1440, K=25, DAILY=3;
+const DEF_CREST={c1:'#1d4ed8',c2:'#ffffff',txt:'AFC'};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function sharedCrest(){try{const k=JSON.parse(localStorage.getItem('kotobaWC_v1'));if(k&&k.crest)return k.crest}catch(e){}return DEF_CREST}
+function crest(sz=40,c){c=c||sharedCrest();const t=esc(c.txt||'');const fs=[...(c.txt||'')].length>=3?10:13;
+ return `<svg width="${sz}" height="${Math.round(sz*1.15)}" viewBox="0 0 40 46" aria-hidden="true"><path d="M4 3h32v20c0 11-7 18-16 21C11 41 4 34 4 23z" fill="${c.c1}" stroke="#0005" stroke-width="2.5"/><path d="M4 3h32v20c0 11-7 18-16 21C11 41 4 34 4 23z" fill="none" stroke="${c.c2}" stroke-width="1.2"/><path d="M8 7h24v16c0 8-5 13.5-12 16-7-2.5-12-8-12-16z" fill="none" stroke="${c.c2}" stroke-width="1.2"/><text x="20" y="26.5" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="${fs}" fill="${c.c2}">${t}</text></svg>`}
+const crestInline=sz=>`<span class="crest" style="display:inline-block;vertical-align:middle">${crest(sz)}</span>`;
+/* レベル調整 */
+const LV_NAME=['とてもやさしい','やさしい','ふつう','むずかしい','とてもむずかしい'];
+const LV_T=[1.6,1.3,1.0,0.9,0.8], LV_N=[6,3,1,3,6];
+const cx=q=>((q.html.replace(/<[^>]+>|&[a-z]+;/g,'')+' '+JSON.stringify(q.ans)).match(/[2-9]/g)||[]).length+((q.html.replace(/<[^>]+>/g,'')).match(/\d/g)||[]).length*0.5;
+function genQ(si){const L=effLv(),st=STAGES[si];if(L===3)return st.gen();const c=Array.from({length:LV_N[L-1]},()=>st.gen());c.sort((a,b)=>cx(a)-cx(b));return L<3?c[0]:c[c.length-1]}
+
+/* ===== 便利関数 ===== */
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[R(0,a.length-1)];
+const fx=x=>String(+(+x).toFixed(6));
+const fr=(n,d)=>`<span class="fr"><span>${n}</span><span>${d}</span></span>`;
+const mx=(w,n,d)=>(w?`<span class="w">${w}</span>`:'')+(n?fr(n,d):(w?'':'0'));
+const Q=(html,ans,type,t,small)=>({html,ans,type,t,small});
+const X='×',D='÷';
+
+/* ===== ステージ（単元） ===== */
+const STAGES=[
+// 小3
+{g:3,name:"九九ウォームアップ",gen(){const a=R(2,9),b=R(2,9);return Q(`${a} ${X} ${b}`,a*b,'int',10)}},
+{g:3,name:"3けたのたし算",gen(){const a=R(100,499),b=R(100,499);return Q(`${a} + ${b}`,a+b,'int',30)}},
+{g:3,name:"3けたのひき算",gen(){const a=R(300,999),b=R(100,a-100);return Q(`${a} − ${b}`,a-b,'int',35)}},
+{g:3,name:"4けたのたし算・ひき算",gen(){const b=R(1,9)*100+R(0,9)*10;if(R(0,1)){const a=R(1000,8000);return Q(`${a} + ${b}`,a+b,'int',35)}const a=R(2000,9999);return Q(`${a} − ${b}`,a-b,'int',40)}},
+{g:3,name:"わり算（九九でとける）",gen(){const d=R(2,9),q=R(1,9);return Q(`${d*q} ${D} ${d}`,{q,r:0},'rem',12)}},
+{g:3,name:"あまりのあるわり算",gen(){const d=R(2,9),q=R(1,9),r=R(1,d-1);return Q(`${d*q+r} ${D} ${d}`,{q,r},'rem',18)}},
+{g:3,name:"2・3けた×1けた",gen(){if(R(0,2)){const a=R(11,49),b=R(2,9);return Q(`${a} ${X} ${b}`,a*b,'int',30)}const a=R(101,300),b=R(2,4);return Q(`${a} ${X} ${b}`,a*b,'int',40)}},
+{g:3,name:"2けた×2けた",gen(){const a=R(11,25),b=R(11,15);return Q(`${a} ${X} ${b}`,a*b,'int',60)}},
+{g:3,name:"3けた×2けた",gen(){const a=R(10,30)*10,b=pick([11,12,13,15,20,21]);return Q(`${a} ${X} ${b}`,a*b,'int',70)}},
+{g:3,name:"小数のたし算・ひき算（0.1）",gen(){let a=R(1,50),b=R(1,50);if(R(0,1))return Q(`${fx(a/10)} + ${fx(b/10)}`,(a+b)/10,'dec',25);if(a<b)[a,b]=[b,a];if(a===b)a++;return Q(`${fx(a/10)} − ${fx(b/10)}`,(a-b)/10,'dec',25)}},
+{g:3,name:"分数のたし算・ひき算",gen(){const d=R(3,9);if(R(0,1)){const n1=R(1,d-1),n2=R(1,d-n1);return Q(`${fr(n1,d)} + ${fr(n2,d)}`,{n:n1+n2,d},'frac',20)}if(R(0,2)===0){const n=R(1,d-1);return Q(`1 − ${fr(n,d)}`,{n:d-n,d},'frac',20)}const n1=R(2,d-1),n2=R(1,n1-1);return Q(`${fr(n1,d)} − ${fr(n2,d)}`,{n:n1-n2,d},'frac',20)}},
+{g:3,name:"何十・何百の計算",gen(){return pick([
+ ()=>{const a=R(2,9)*10,b=R(2,9);return Q(`${a} ${X} ${b}`,a*b,'int',15)},
+ ()=>{const a=R(2,9)*100,b=R(2,5);return Q(`${a} ${X} ${b}`,a*b,'int',15)},
+ ()=>{const a=R(2,5)*10,b=R(2,5)*10;return Q(`${a} ${X} ${b}`,a*b,'int',18)},
+ ()=>{const a=R(11,99),b=pick([10,100]);return Q(`${a} ${X} ${b}`,a*b,'int',15)},
+ ()=>{const a=R(2,99)*10;return Q(`${a} ${D} 10`,{q:a/10,r:0},'rem',15)},
+ ()=>{const d=R(2,5),q=R(1,4)*10;return Q(`${d*q} ${D} ${d}`,{q,r:0},'rem',18)}])()}},
+// 小4
+{g:4,name:"わり算の筆算（÷1けた）",gen(){const d=R(2,6),q=R(10,50),r=R(0,1)?0:R(1,d-1);return Q(`${d*q+r} ${D} ${d}`,{q,r},'rem',45)}},
+{g:4,name:"何十でわる・2けた÷2けた",gen(){if(R(0,1)){const d=R(2,9)*10,q=R(1,5),r=R(0,1)&&d>10?R(1,d/10-1)*10:0;return Q(`${d*q+r} ${D} ${d}`,{q,r},'rem',30)}const d=R(11,25),q=R(1,Math.floor(99/d)),r=R(0,Math.min(d-1,99-d*q));return Q(`${d*q+r} ${D} ${d}`,{q,r},'rem',40)}},
+{g:4,name:"3けた÷2けた",gen(){let d,q,r,a;do{d=pick([11,12,15,20,21,25]);q=R(5,30);r=R(0,4)<2?0:R(1,d-1);a=d*q+r}while(a<100||a>999);return Q(`${a} ${D} ${d}`,{q,r},'rem',75)}},
+{g:4,name:"計算のじゅんじょ（）",gen(){return pick([
+ ()=>{const a=R(10,50),b=R(2,9),c=R(2,5);return Q(`${a} + ${b} ${X} ${c}`,a+b*c,'int',35)},
+ ()=>{const a=R(2,15),b=R(2,15),c=R(2,5);return Q(`(${a} + ${b}) ${X} ${c}`,(a+b)*c,'int',35)},
+ ()=>{const b=R(2,9),c=R(2,5),a=R(b*c+1,60);return Q(`${a} − ${b} ${X} ${c}`,a-b*c,'int',35)},
+ ()=>{const a=R(2,5),c=R(1,10),b=R(c+1,c+10);return Q(`${a} ${X} (${b} − ${c})`,a*(b-c),'int',35)},
+ ()=>{const b=R(2,9),q=R(2,9),c=R(1,30);return Q(`${b*q} ${D} ${b} + ${c}`,q+c,'int',30)},
+ ()=>{const c=R(2,5),t=c*R(2,9),a=R(1,t-1);return Q(`(${a} + ${t-a}) ${D} ${c}`,t/c,'int',35)}])()}},
+{g:4,name:"がい数（四捨五入）",gen(){const o=pick([{p:10,l:"十の位まで",lo:100,hi:999},{p:100,l:"百の位まで",lo:1000,hi:9999},{p:1000,l:"千の位まで",lo:10000,hi:99999}]);const n=R(o.lo,o.hi);return Q(`${n.toLocaleString('ja-JP')} を四捨五入して<br>${o.l}のがい数に`,Math.round(n/o.p)*o.p,'int',25,true)}},
+{g:4,name:"小数のたし算・ひき算（0.01）",gen(){let a=R(1,500),b=R(1,300);if(R(0,1))b=R(1,50)*10;if(R(0,1))return Q(`${fx(a/100)} + ${fx(b/100)}`,(a+b)/100,'dec',35);if(a<b)[a,b]=[b,a];if(a===b)a+=7;return Q(`${fx(a/100)} − ${fx(b/100)}`,(a-b)/100,'dec',35)}},
+{g:4,name:"小数×整数",gen(){if(R(0,2)){const a=R(11,50),b=R(2,6);return Q(`${fx(a/10)} ${X} ${b}`,a*b/10,'dec',40)}const a=R(101,300),b=R(2,4);return Q(`${fx(a/100)} ${X} ${b}`,a*b/100,'dec',50)}},
+{g:4,name:"小数÷整数（わり切れる）",gen(){const d=R(2,6),qi=R(11,50),s=R(0,2)?10:100;return Q(`${fx(qi*d/s)} ${D} ${d}`,qi/s,'dec',50)}},
+{g:4,name:"分数（帯分数・仮分数）",gen(){const d=R(3,7);return pick([
+ ()=>{const w1=R(1,2),n1=R(1,d-1),w2=R(1,2),n2=R(1,d-1);return Q(`${mx(w1,n1,d)} + ${mx(w2,n2,d)}`,{n:(w1+w2)*d+n1+n2,d},'frac',50)},
+ ()=>{const w1=R(2,3),w2=R(1,w1-1),n1=R(1,d-1),n2=R(1,n1);return Q(`${mx(w1,n1,d)} − ${mx(w2,n2,d)}`,{n:(w1*d+n1)-(w2*d+n2),d},'frac',45)},
+ ()=>{const n1=R(d+1,2*d),n2=R(1,d);return Q(`${fr(n1,d)} + ${fr(n2,d)}`,{n:n1+n2,d},'frac',35)},
+ ()=>{const w=R(2,3),n=R(1,d-1);return Q(`${w} − ${fr(n,d)}`,{n:w*d-n,d},'frac',40)}])()}},
+{g:4,name:"ワールドカップ決勝（総合）",gen(){return pick(STAGES.slice(1,21)).gen()}}
+];
+
+[7,8,12,14,18,19].forEach(i=>STAGES[i].paper=true);
+/* 文章題 */
+function wordify(q){
+  if(q.small)return null;
+  const m=q.html.split(/ (\+|−|×|÷) /);if(m.length!==3)return null;
+  const [a,op,b]=m;const dec=q.type==='dec',fra=q.type==='frac';
+  let t;
+  if(op==='+')t=fra?pick([`ジュースが ${a} L と ${b} L あります。合わせて何L？`]):dec?pick([`水とうに ${a} L、ボトルに ${b} L のスポーツドリンク。合わせて何L？`,`午前に ${a} km、午後に ${b} km 走りました。合わせて何km？`]):pick([`スタジアムに観客が ${a} 人います。あとから ${b} 人来ました。全部で何人？`,`シュート練習で、きのう ${a} 本、きょう ${b} 本けりました。合わせて何本？`]);
+  else if(op==='−')t=fra?pick([`お茶が ${a} L あります。${b} L 飲みました。のこりは何L？`]):dec?pick([`${a} km のランニングコース。${b} km 走りました。のこりは何km？`]):pick([`ボールが ${a} こあります。${b} こ使いました。のこりは何こ？`,`チケットが ${a} まいあります。${b} まい売れました。のこりは何まい？`]);
+  else if(op==='×')t=dec?`1本 ${a} L のペットボトルが ${b} 本あります。全部で何L？`:pick([`1こ ${a} 円のボールを ${b} こ買います。代金は何円？`,`1ふくろに ${a} こずつ入ったボールが ${b} ふくろ。全部で何こ？`]);
+  else t=dec?`${a} m のロープを ${b} 人で同じ長さに分けます。1人何m？`:(q.ans.r?`${a} 人の選手を ${b} 人ずつのチームに分けます。何チームできて、何人あまる？`:pick([`${a} こ のボールを ${b} 人で同じ数ずつ分けます。1人何こ？`,`${a} 人の選手を ${b} 人ずつのチームに分けます。何チームできる？（あまりが出たら「あまり」も）`]));
+  return {...q,html:`<span class="wp">📝 ${t}</span>`,wp:true,t:Math.round(q.t*1.5)};
+}
+
+/* ===== セーブ ===== */
+let S;
+function load(){try{S=JSON.parse(localStorage.getItem('calcWC_v1'))}catch(e){}if(!S||typeof S.pts!=='number')S={name:'あざみ野FC',pts:START_PTS,cleared:{},best:{},slow:false,lv:3};if(S.name==='サムライキッズ'||S.name==='ヤマルキッズ')S.name='あざみ野FC';if(!S.lv)S.lv=3;S.legs=S.legs||{};S.weak=S.weak||[];if(!S.seed35){if(S.pts<1535)S.pts=1535;for(let i=0;i<4;i++)S.cleared[i]=true;S.seed35=true;try{localStorage.setItem('calcWC_v1',JSON.stringify(S))}catch(e){}}S.daily=S.daily||{date:'',n:0};S.streak=S.streak||{last:'',n:0}}
+const dstr=d=>`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+const today=()=>dstr(new Date());
+const yesterday=()=>{const d=new Date();d.setDate(d.getDate()-1);return dstr(d)};
+function usedToday(){return S.daily.date===today()?S.daily.n:0}
+function streakNow(){return (S.streak.last===today()||S.streak.last===yesterday())?S.streak.n:0}
+function save(){try{localStorage.setItem('calcWC_v1',JSON.stringify(S))}catch(e){}}
+
+
+/* ===== 入口サイト連携 ===== */
+const HUB={keys:{sansu:'calcWC_v1',kokugo:'kotobaWC_v1',eigo:'eigoWC_v1'},me:'sansu'};
+function hubDay(){const d=new Date();return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`}
+function hubMark(){try{const h=JSON.parse(localStorage.getItem('wcHub_v1'))||{days:{}};const t=hubDay();h.days[t]=h.days[t]||{};h.days[t][HUB.me]=true;localStorage.setItem('wcHub_v1',JSON.stringify(h))}catch(e){}}
+function hubIsBehind(){try{const o=[];for(const k in HUB.keys){if(k===HUB.me)continue;const s=JSON.parse(localStorage.getItem(HUB.keys[k]));o.push(s&&typeof s.pts==='number'?s.pts:1440)}return o.length>0&&o.every(p=>p>S.pts)}catch(e){return false}}
+
+function hubUnlocked(){try{const h=JSON.parse(localStorage.getItem('wcHub_v1'))||{};if(h.lockOn===false)return true;return !!(h.unlock&&h.unlock[hubDay()])}catch(e){return true}}
+function hubLockMsg(){overlay(`<div style="font-size:44px">📚🔒</div><h3 style="margin:6px 0">学校と塾の宿題がおわったらキックオフ！</h3><p class="mut">宿題がおわったら、おうちの人に入口の「宿題チェック」でロックを解除してもらおう。</p><div class="row" style="justify-content:center;gap:8px"><button class="btn" onclick="closeOver()">とじる</button><a class="btn pri" href="../index.html" style="text-decoration:none">入口へ</a></div>`)}
+
+const oppBoost=r=>r<=5?2:r<=15?1:0;
+function effLv(){return Math.max(1,Math.min(5,(S.lv||3)+((typeof M!=='undefined'&&M&&!M.rev&&M.orank)?oppBoost(M.orank):0)))}
+
+/* ===== おうちのルール・記録 ===== */
+const RULE={night:20,weekdayMin:60};
+function hubGet(){try{return JSON.parse(localStorage.getItem('wcHub_v1'))||{days:{}}}catch(e){return {days:{}}}}
+function hubPut(h){try{localStorage.setItem('wcHub_v1',JSON.stringify(h))}catch(e){}}
+function hubBlock(){
+  const h=hubGet(),t=hubDay(),d=new Date(),ext=(h.ext&&h.ext[t])||{};
+  if(h.lockOn!==false&&!(h.unlock&&h.unlock[t]))return 'hw';
+  if(d.getHours()>=(ext.night||RULE.night)||d.getHours()<5)return 'night';
+  const wd=d.getDay()>=1&&d.getDay()<=5,used=(h.mins&&h.mins[t])||0;
+  if(wd&&used>=RULE.weekdayMin+(ext.min||0))return 'time';
+  return null;
+}
+function hubBlockMsg(r){
+  if(r==='hw')return hubLockMsg();
+  const m=r==='night'?{i:'🌙',t:'夜8時をすぎたので、今日はおしまい',d:'選手たちはもうねる時間。また明日キックオフしよう！'}:{i:'⏱️',t:'今日は60分プレーしたよ',d:'平日は60分まで。目と頭を休めて、また明日！'};
+  overlay(`<div style="font-size:44px">${m.i}</div><h3 style="margin:6px 0">${m.t}</h3><p class="mut">${m.d}<br>（おうちの人がOKなら、入口のメニューで延長できるよ）</p><div class="row" style="justify-content:center;gap:8px"><button class="btn" onclick="closeOver()">とじる</button><a class="btn pri" href="../index.html" style="text-decoration:none">入口へ</a></div>`);
+}
+function hubAddTime(){try{if(!M||!M.t0)return;const m=(Date.now()-M.t0)/60000;M.t0=0;const h=hubGet(),t=hubDay();h.mins=h.mins||{};h.mins[t]=Math.round(((h.mins[t]||0)+m)*10)/10;hubPut(h)}catch(e){}}
+function hubLog(){try{
+  const strip=x=>String(x||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+  const e={app:HUB.me,at:new Date().toISOString(),day:hubDay(),stage:M.rev?'rev':M.si,stageName:M.rev?'苦手リベンジ':(STAGES[M.si]&&STAGES[M.si].name),leg:M.leg||1,opp:M.opp&&M.opp.name,orank:M.orank,lv:S.lv,eff:effLv(),my:M.my,op:M.op,pk:M.phase==='pk'?M.pkMy:null,res:(M.res||[]).map(x=>x===1?1:0).join(''),secs:(M.times||[]).map(t=>Math.round(t)),min:M.t0?Math.round((Date.now()-M.t0)/600)/100:null,missed:(M.missed||[]).map(q=>strip(q.html||q.label||q.q).slice(0,80))};
+  const L=JSON.parse(localStorage.getItem('wcLog_v1')||'[]');L.push(e);while(L.length>400)L.shift();localStorage.setItem('wcLog_v1',JSON.stringify(L));
+  if(window.claude&&window.claude.use)window.claude.use('db').then(async db=>{if(!db)return;const r=db.doc('logs/'+e.day.replace(/-/g,'')+'_'+HUB.me),sn=await r.get(),d=(sn&&sn.exists&&sn.data())||{};await r.set({app:HUB.me,day:e.day,matches:[...(d.matches||[]),e]})}).catch(()=>{});
+}catch(_){}}
+
+/* ===== ランキング ===== */
+const rankOf=p=>1+TEAMS.filter(t=>t.pts>p).length;
+function oppFor(p){const above=TEAMS.filter(t=>t.pts>p);return above.length?above[above.length-1]:TEAMS.filter(t=>t.pts<=p)[0]}
+const realRank=t=>TEAMS.indexOf(t)+1;
+const starsOf=r=>'★'.repeat(r<=5?5:r<=15?4:r<=25?3:r<=40?2:1);
+const timeFactor=r=>1+0.5*(Math.min(r,50)-1)/49;
+
+/* ===== 画面 ===== */
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));window.scrollTo(0,0)}
+function goHome(){renderHome();show('home')}
+function renderHome(){
+  const r=rankOf(S.pts),o=oppFor(S.pts),or=realRank(o);
+  tname.value=S.name;myRank.textContent=r+'位';myPts.textContent=S.pts.toFixed(2)+' pt';
+  const n=Object.keys(S.cleared).length;clearInfo.innerHTML=`クリア ${n} / ${STAGES.length}　<span class="lvtag">レベル ${S.lv}：${LV_NAME[S.lv-1]}</span>`;crestHome.innerHTML=crest(40);
+  const u=usedToday(),sk=streakNow();dayInfo.innerHTML=`今日の突破 ${'🏆'.repeat(u)}${'○'.repeat(Math.max(0,DAILY-u))}（あと${Math.max(0,DAILY-u)}ステージ）`+(sk?`　🔥 ${sk}日連続`:'');
+  oFlag.textContent=o.flag;oName.textContent=o.name;oRank.textContent=`FIFAランク ${or}位`;oStars.textContent=starsOf(or);
+  const f=timeFactor(or)*(S.slow?2:1);oTime.textContent=oppBoost(or)?`強豪国！問題のむずかしさ +${oppBoost(or)}`:'';
+  slow.checked=!!S.slow;
+  const due=S.weak.filter(x=>x.due<=Date.now());
+  let h=S.weak.length?`<button class="stage" style="background:#fff3c4" ${due.length?'onclick="startRevenge()"':'disabled'}><span class="no" style="background:#c60b1e">🔁</span><span class="t"><b>苦手リベンジ</b><span class="st">${due.length?`今日のリベンジ ${Math.min(10,due.length)}問（苦手リスト ${S.weak.length}問）`:`苦手リスト ${S.weak.length}問・明日またチャレンジできるよ`}</span></span><span>${due.length?'▶':''}</span></button>`:'',g=0;
+  STAGES.forEach((s,i)=>{
+    if(s.g!==g){g=s.g;h+=`<div class="grade">${g===3?'🟢 小学3年':'🔵 小学4年'}</div>`}
+    const open=i===0||S.cleared[i-1]||S.cleared[i];const done=S.cleared[i];const b=S.best[i];
+    h+=`<button class="stage ${open?'':'lock'} ${done?'done':''}" ${open?`onclick="startMatch(${i})"`:'disabled'}><span class="no">${done?'✓':i+1}</span><span class="t"><b>${s.name}${s.paper?' ✏️':''}</b><span class="st">${S.legs[i]?`第1戦 ${S.legs[i].my}-${S.legs[i].op} → 第2戦（アウェイ）へ`:open?(b?`ベスト（合計）${b}`:'まだ挑戦していない'):'🔒 前のステージを突破するとひらく'}</span></span><span>${open?'▶':''}</span></button>`;
+  });
+  stages.innerHTML=h;
+}
+tname.addEventListener('change',()=>{S.name=tname.value.trim()||'あざみ野FC';save()});
+slow.addEventListener('change',()=>{S.slow=slow.checked;save();renderHome()});
+function resetAll(){overlay(`<h3>さいしょからやり直す？</h3><p class="mut">ランキングとクリア記録が消えます。</p><div class="row" style="justify-content:center"><button class="btn" onclick="closeOver()">やめる</button><button class="btn pri" onclick="doReset()">やり直す</button></div>`)}
+function doReset(){S={name:S.name,pts:START_PTS,cleared:{},best:{},slow:S.slow,lv:3,legs:{},daily:{date:'',n:0},streak:S.streak};save();closeOver();renderHome()}
+function showRanking(){
+  const list=TEAMS.map(t=>({...t})).concat([{name:S.name,flag:crestInline(18),pts:S.pts,me:true}]).sort((a,b)=>b.pts-a.pts);
+  rtable.innerHTML=list.map((t,i)=>`<tr class="${t.me?'me':''}" ${t.me?'id="meRow"':''}><td class="r">${i+1}</td><td>${t.flag} ${t.name}</td><td class="p">${t.pts.toFixed(2)}</td></tr>`).join('');
+  show('ranking');setTimeout(()=>{const m=document.getElementById('meRow');m&&m.scrollIntoView({block:'center'})},50);
+}
+function overlay(h){overBox.innerHTML=h;over.classList.add('on')}
+function closeOver(){over.classList.remove('on')}
+
+/* ===== 試合 ===== */
+let M=null,TI=null;
+const CM_OK=['ゴーーール！','見事なシュート！','ネットをゆらした！','計算どおりのゴール！','ナイス連携！'];
+const CM_NG=['うわっ、失点…','カウンターをくらった…','相手にボールをうばわれた…'];
+function startMatch(si){
+  {const _b=hubBlock();if(_b)return hubBlockMsg(_b)}
+  if(usedToday()>=DAILY){overlay(`<h3>今日は${DAILY}ステージ突破！</h3><p class="mut">おつかれさま。選手たちは休養中。また明日キックオフしよう⚽</p><button class="btn pri" onclick="closeOver()">OK</button>`);return}
+  const lg=S.legs[si],leg=lg?2:1;
+  const opp=(lg&&TEAMS.find(t=>t.name===lg.opp))||oppFor(S.pts);
+  M={si,opp,leg,a0:lg?{my:lg.my,op:lg.op}:{my:0,op:0},orank:realRank(opp),i:0,my:0,op:0,res:[],missed:[],phase:'reg',pkI:0,pkMy:0,ht:false,locked:true,ratios:[],times:[],tos:0,wpIdx:R(1,9)};crestMatch.innerHTML=crest(28);
+  mMy.textContent=S.name;mOp.textContent=opp.name;mOpF.textContent=opp.flag;sMy.textContent=0;sOp.textContent=0;comm.textContent='';
+  ball.style.left='50%';show('match');
+  overlay(`<div style="font-size:44px">${crestInline(44)} vs ${opp.flag}</div><h3 style="margin:6px 0">${S.name} vs ${opp.name}</h3><p class="mut">ステージ${si+1}「${STAGES[si].name}」<br>FIFAランク${M.orank}位 ${starsOf(M.orank)}<br>レベル ${effLv()}：${LV_NAME[effLv()-1]}${oppBoost(M.orank)?`（強豪国でむずかしさ+${oppBoost(M.orank)}）`:''}　全10問（前半5・後半5）<br>${leg===1?'第1戦（ホーム）':`第2戦（アウェイ）・第1戦は ${M.a0.my}-${M.a0.op}`}<br>正解＝ゴール、まちがい＝失点！時間はたっぷり、じっくり考えよう</p><button class="btn pri" onclick="kickoff()">キックオフ！</button>`);
+}
+function kickoff(){
+  const t=today();if(S.daily.date!==t)S.daily={date:t,n:0};
+  if(S.streak.last!==t){S.streak.n=S.streak.last===yesterday()?S.streak.n+1:1;S.streak.last=t}
+  save();closeOver();nextQ();
+}
+function nextQ(){
+  if(M.phase==='reg'){
+    if(M.rev){if(M.i>=M.rq.length)return finishRevenge()}
+    else if(M.i===5&&!M.ht){M.ht=true;overlay(`<h3>ハーフタイム</h3><div class="big">${M.my} - ${M.op}</div><button class="btn pri" onclick="closeOver();nextQ()">後半キックオフ</button>`);return}
+    if(!M.rev&&M.i===10){
+      if(M.leg===1||M.my+M.a0.my!==M.op+M.a0.op)return finish();
+      M.phase='pk';overlay(`<h3>2試合の合計が同点！PK戦へ</h3><p class="mut">3問中2問正解で勝ち！</p><button class="btn pri" onclick="closeOver();nextQ()">PKスタート</button>`);return;
+    }
+  }else{
+    if(M.pkMy>=2||(M.pkI-M.pkMy)>=2||M.pkI>=3)return finish();
+  }
+  let q=M.rev?{...M.rq[M.i]}:genQ(M.si);
+  if(!M.rev&&M.phase==='reg'&&M.i===M.wpIdx){const w=wordify(q);if(w)q=w}
+  const paper=!M.rev&&STAGES[M.si].paper;
+  q.limit=Math.max(8,Math.round(q.t*timeFactor(M.orank)*(M.rev?1.3:LV_T[S.lv-1])*(paper?1.5:1)*(S.slow?2:1)));
+  M.q=q;M.input='';M.locked=false;
+  halfLab.textContent=M.rev?`苦手リベンジ ${M.i+1} / ${M.rq.length}問目`:(M.leg===2?`合計 ${M.my+M.a0.my}-${M.op+M.a0.op} ・ `:'第1戦 ・ ')+(M.phase==='pk'?`PK戦 ${M.pkI+1}本目（成功 ${M.pkMy}）`:(M.i<5?'前半':'後半')+` ${M.i+1}問目`);
+  qlab.textContent=`じっくり考えてOK`+(paper?'　✏️ 紙に筆算OK':'')+(q.wp?'　📝 文章題':'');
+  document.getElementById('q').innerHTML=q.html+(q.wp?'':' ＝');document.getElementById('q').classList.toggle('small',!!q.small);
+  hint.textContent={rem:'あまりがあるときは「あまり」ボタン（例: 7あまり3）',frac:'分数は「/」、帯分数は「と」（例: 1と2/5）',dec:'小数点は「.」',int:''}[q.type];
+  comm.textContent='';renderAns();renderDots();renderPad(q.type);startTimer(q.limit);
+}
+function renderDots(){
+  let h='';for(let k=0;k<10;k++){const r=M.res[k];h+=`<i class="${r===1?'ok':r===0?'ng':(k===M.i&&M.phase==='reg'?'now':'')}"></i>`}dots.innerHTML=h;
+}
+function renderAns(){ans.textContent=M.input||'　'}
+function renderPad(type){
+  const sp={int:[],dec:['.'],frac:['/','と'],rem:['あまり']}[type];
+  const s=k=>sp[k]?`<button class="sp" data-k="${sp[k]}">${sp[k]}</button>`:`<button class="blank" tabindex="-1"></button>`;
+  pad.innerHTML=['7','8','9'].map(n=>`<button data-k="${n}">${n}</button>`).join('')+`<button class="sp" data-k="del">⌫</button>`+
+   ['4','5','6'].map(n=>`<button data-k="${n}">${n}</button>`).join('')+s(0)+
+   ['1','2','3'].map(n=>`<button data-k="${n}">${n}</button>`).join('')+s(1)+
+   `<button data-k="0">0</button>`+s(2)+`<button class="ok" data-k="ok">けってい</button>`;
+}
+pad.addEventListener('click',e=>{const b=e.target.closest('button[data-k]');if(b)key(b.dataset.k)});
+document.addEventListener('keydown',e=>{
+  if(!document.getElementById('match').classList.contains('on')||over.classList.contains('on'))return;
+  const t=M&&M.q&&M.q.type;let k=null;
+  if(/^[0-9]$/.test(e.key))k=e.key;else if(e.key==='Backspace')k='del';else if(e.key==='Enter')k='ok';
+  else if(e.key==='.'&&t==='dec')k='.';else if(e.key==='/'&&t==='frac')k='/';else if(e.key===' '&&t==='frac')k='と';else if(e.key==='r'&&t==='rem')k='あまり';
+  if(k){e.preventDefault();key(k)}
+});
+function key(k){
+  if(!M||M.locked)return;
+  if(k==='ok')return submit();
+  if(k==='del'){M.input=M.input.slice(0,-1);return renderAns()}
+  if(M.input.length>=14)return;
+  if((k==='.'&&/\.$/.test(M.input))||(['あまり','と'].includes(k)&&M.input.includes(k)))return;
+  M.input+=k;renderAns();
+}
+function startTimer(sec){
+  clearInterval(TI);const end=Date.now()+sec*1000;M.qStart=Date.now();if(!M.t0)M.t0=Date.now();
+  tbar.style.width='0%';
+}
+function parseAns(s,type,a){
+  if(type==='int'||type==='dec'){if(!/^\d+(\.\d+)?$/.test(s))return null;return Math.abs(parseFloat(s)-a)<1e-9}
+  if(type==='rem'){const m=s.match(/^(\d+)(?:あまり(\d+))?$/);if(!m)return null;return +m[1]===a.q&&(+(m[2]||0))===a.r}
+  if(type==='frac'){let w=0,n,d,m;
+    if(m=s.match(/^(\d+)と(\d+)\/(\d+)$/)){w=+m[1];n=+m[2];d=+m[3]}
+    else if(m=s.match(/^(\d+)\/(\d+)$/)){n=+m[1];d=+m[2]}
+    else if(m=s.match(/^(\d+)$/)){n=+m[1];d=1}else return null;
+    if(d===0)return null;return (w*d+n)*a.d===a.n*d}
+}
+function ansText(q){const a=q.ans;
+  if(q.type==='int'||q.type==='dec')return fx(a);
+  if(q.type==='rem')return a.r?`${a.q} あまり ${a.r}`:`${a.q}`;
+  const {n,d}=a;if(n%d===0)return String(n/d);if(n>d)return `${mx(Math.floor(n/d),n%d,d)}（${fr(n,d)}）`;return fr(n,d);
+}
+function submit(){
+  if(!M.input)return;const ok=parseAns(M.input,M.q.type,M.q.ans);
+  if(ok===null){ans.classList.remove('shake');void ans.offsetWidth;ans.classList.add('shake');hint.textContent='こたえのかたちを確かめてね（失点にはならないよ）';return}
+  judge(ok,false);
+}
+function judge(ok,timeout){
+  if(M.locked)return;M.locked=true;clearInterval(TI);
+  const pk=M.phase==='pk';
+  if(!pk){const used=timeout?M.q.limit:Math.min(M.q.limit,(Date.now()-M.qStart)/1000);M.times.push(used);M.ratios.push(used/M.q.limit);if(timeout)M.tos++}
+  if(ok&&M.rev){S.weak=S.weak.filter(x=>x.html!==M.q.html);M.fixed++;save()}
+  if(ok){
+    if(pk)M.pkMy++;else{M.my++;M.res[M.i]=1}
+    comm.textContent=pick(CM_OK);ball.style.left='96%';
+    goaltxt.classList.remove('go');void goaltxt.offsetWidth;goaltxt.classList.add('go');
+  }else{
+    if(!pk){M.op++;M.res[M.i]=0}
+    M.missed.push(M.q);
+    if(M.rev){const w=S.weak.find(x=>x.html===M.q.html);if(w)w.due=Date.now()+20*3600e3}
+    else if(!S.weak.some(x=>x.html===M.q.html)){const {html,ans,type,t,small,wp}=M.q;S.weak.push({html,ans,type,t,small,wp,due:Date.now()+20*3600e3});if(S.weak.length>40)S.weak.shift()}
+    save();
+    comm.textContent=timeout?'時間切れ！相手ボールに…':(pk?'PK失敗…':pick(CM_NG));ball.style.left=pk?'50%':'4%';
+  }
+  sMy.textContent=M.my;sOp.textContent=M.op;renderDots();
+  const adv=()=>{ball.style.left='50%';if(pk)M.pkI++;else M.i++;nextQ()};
+  if(ok)setTimeout(adv,1000);
+  else{ans.innerHTML=`<span style="color:var(--red)">正解：${ansText(M.q)}</span>`;
+    pad.innerHTML=`<button class="ok" style="grid-column:span 4" id="nx">つぎへ ▶</button>`;document.getElementById('nx').onclick=adv;}
+}
+function quitMatch(){overlay(`<h3>試合をやめる？</h3><p class="mut">この試合は記録されません。</p><div class="row" style="justify-content:center"><button class="btn" onclick="closeOver()">つづける</button><button class="btn pri" onclick="clearInterval(TI);hubAddTime();M=null;closeOver();goHome()">やめる</button></div>`)}
+function startRevenge(){
+  {const _b=hubBlock();if(_b)return hubBlockMsg(_b)}
+  const due=S.weak.filter(x=>x.due<=Date.now()).slice(0,10);if(!due.length)return;
+  const opp={name:'過去の自分',flag:'👻',pts:S.pts};
+  M={rev:true,rq:due,fixed:0,si:0,opp,orank:50,leg:1,a0:{my:0,op:0},i:0,my:0,op:0,res:[],missed:[],phase:'reg',pkI:0,pkMy:0,ht:true,locked:true,ratios:[],times:[],tos:0};
+  crestMatch.innerHTML=crest(28);mMy.textContent=S.name;mOp.textContent=opp.name;mOpF.textContent=opp.flag;sMy.textContent=0;sOp.textContent=0;comm.textContent='';ball.style.left='50%';show('match');
+  overlay(`<div style="font-size:44px">🔁</div><h3 style="margin:6px 0">苦手リベンジ</h3><p class="mut">前にまちがえた問題 ${due.length}問に再チャレンジ！<br>正解した問題は苦手リストから消えるよ。<br>ランキングには影響しません。</p><button class="btn pri" onclick="closeOver();nextQ()">スタート</button>`);
+}
+function finishRevenge(){
+  hubLog();hubAddTime();
+  clearInterval(TI);hubMark();
+  let h=`<h2>🔁 リベンジ結果</h2><div class="big">${M.fixed} / ${M.rq.length}</div><div class="mut">苦手をやっつけた！　苦手リストのこり ${S.weak.length}問</div>`;
+  if(M.missed.length)h+=`<div class="miss"><b>まだ苦手（明日また出るよ）</b>${M.missed.map(q=>`<div><span>${q.html}${q.wp?'':' ＝'}</span><b>${ansText(q)}</b></div>`).join('')}</div>`;
+  else h+=`<div style="margin-top:8px;font-weight:800;color:var(--g1)">全問リベンジ成功！</div>`;
+  resBox.innerHTML=h;M=null;show('result');
+}
+function finish(){
+  hubLog();hubAddTime();
+  clearInterval(TI);
+  const o=M.opp,before=S.pts,rb=rankOf(before);
+  let res=M.phase==='pk'?(M.pkMy>=2?'pkwin':'pkloss'):M.my>M.op?'win':M.my<M.op?'loss':'draw';
+  const W={win:1,pkwin:.75,draw:.5,pkloss:.5,loss:0}[res];
+  const am=M.my+M.a0.my,ao=M.op+M.a0.op;
+  const adv=M.leg===2&&(am>ao||(am===ao&&M.pkMy>=2));
+  const We=1/(Math.pow(10,-(before-o.pts)/600)+1);
+  let dlt=K*(W-We);if(dlt<0)dlt*=.5;dlt=Math.round(dlt*100)/100;
+  let boost=false;if(dlt>0&&hubIsBehind()){dlt=Math.round(dlt*1.2*100)/100;boost=true}hubMark();
+  S.pts=Math.round((before+dlt)*100)/100;const ra=rankOf(S.pts);
+  const sc=`${M.my}-${M.op}`+(M.phase==='pk'?`（PK ${M.pkMy}/${M.pkI}）`:'');
+  if(M.leg===1)S.legs[M.si]={opp:o.name,my:M.my,op:M.op};else delete S.legs[M.si];
+  if(adv){const t=today();if(S.daily.date!==t)S.daily={date:t,n:0};S.daily.n++;S.cleared[M.si]=true;const prev=S.best[M.si];if(!prev||am-ao>(+prev.split('-')[0]-+prev.split('-')[1]))S.best[M.si]=`${am}-${ao}`}
+  const nq=M.times.length,acc=M.res.filter(x=>x===1).length/Math.max(1,nq);
+  const avgT=M.times.reduce((a,b)=>a+b,0)/Math.max(1,nq),avgR=M.ratios.reduce((a,b)=>a+b,0)/Math.max(1,nq);
+  const lvBefore=S.lv;let lvMsg='';
+  if(acc>=0.9&&avgR<0.45)S.lv=Math.min(5,S.lv+1);
+  else if(acc<=0.3)S.lv=Math.max(1,S.lv-2);
+  else if(acc<=0.5||M.tos>=3||(acc<0.7&&avgR>0.75))S.lv=Math.max(1,S.lv-1);
+  if(S.lv>lvBefore)lvMsg=`余裕があったので、つぎはレベルアップ！（${LV_NAME[S.lv-1]}）`;
+  else if(S.lv<lvBefore)lvMsg=`つぎは少しやさしくするよ（${LV_NAME[S.lv-1]}）。問題をやさしめにするね`;
+  else lvMsg=`ちょうどいいレベル。このまま（${LV_NAME[S.lv-1]}）`;
+  save();
+  const passed=TEAMS.filter(t=>t.pts<=S.pts&&t.pts>before);
+  const lr={win:'勝利！',draw:'引き分け',loss:'負け…',pkwin:'PK勝ち',pkloss:'PK負け'}[res];
+  const title=M.leg===1?`第1戦 ${lr}`:(adv?'🏆 突破！':'😢 敗退…');
+  let h=`<h2>${title}</h2>${M.leg===2?`<div class="mut">第2戦 ${lr}　2試合合計 <b>${am}-${ao}</b></div>`:''}<div class="mut">vs ${o.flag} ${o.name}（FIFAランク${M.orank}位）</div><div class="big">${sc}</div>
+  <div class="delta ${dlt>=0?'up':'down'}">${dlt>=0?'+':''}${dlt.toFixed(2)} pt${boost?' 🚀追い上げ×1.2':''}</div>
+  <div style="margin-top:6px">世界ランキング <b>${rb}位 → ${ra}位</b>${ra<rb?' ⬆️':''}</div>`;
+  if(passed.length)h+=`<div class="mut" style="margin-top:4px">${passed.map(t=>t.flag+t.name).join('、')} をぬいた！</div>`;
+  if(ra===1&&rb!==1)h+=`<div class="big" style="font-size:26px;color:var(--g1)">🌍 世界ランキング1位！</div>`;
+  if(M.leg===1)h+=`<div class="mut" style="margin-top:6px">第2戦（アウェイ）で合計スコアを上回れば突破！</div>`;
+  if(adv&&M.si<STAGES.length-1&&!S.cleared[M.si+1])h+=`<div class="mut" style="margin-top:6px">ステージ${M.si+2}「${STAGES[M.si+1].name}」がひらいた！</div>`;
+  if(M.leg===2&&!adv)h+=`<div class="mut" style="margin-top:6px">もう一度、第1戦からチャレンジ！</div>`;
+  const left=DAILY-usedToday();h+=`<div class="mut" style="margin-top:8px">${left?`今日はあと ${left} ステージ突破できる`:'今日は3ステージ突破！また明日！'}</div>`;
+  h+=`<div class="stat"><span>正答率 <b>${Math.round(acc*100)}%</b></span></div><div style="margin-top:6px"><span class="lvtag">レベル ${S.lv}</span> ${lvMsg}</div>`;
+  if(M.missed.length)h+=`<div class="miss"><b>ふりかえり（まちがえた問題）</b>${M.missed.map(q=>`<div><span>${q.html}${q.wp?'':' ＝'}</span><b>${ansText(q)}</b></div>`).join('')}</div>`;
+  else h+=`<div style="margin-top:8px;font-weight:800;color:var(--g1)">パーフェクト！ノーミス！</div>`;
+  resBox.innerHTML=h;M=null;show('result');
+}
+
+load();renderHome();
+window.onSyncRestored=()=>{if(!M){load();renderHome()}};
+</script>
+<script>if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('../sw.js').catch(()=>{}));</script>
+</body>
+</html>

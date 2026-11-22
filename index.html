@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>ワールドカップ学習スタジアム</title>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0c1b33;--red:#c60b1e;--gold:#ffc400;--g1:#0b6b3a;--mut:#6b778c}
+*{box-sizing:border-box}
+body{margin:0;font-family:"M PLUS Rounded 1c",system-ui,sans-serif;background:var(--navy);color:#13213a;font-weight:500}
+main{max-width:520px;margin:0 auto;padding:16px 14px 30px}
+h1{color:#fff;font-size:22px;margin:4px 0 2px;font-weight:800}
+.sub{color:#9fb0cc;font-size:12px;margin-bottom:12px}
+.card{background:#fff;border-radius:16px;padding:14px;margin-bottom:12px}
+.hero{background:linear-gradient(135deg,var(--red),#e2343f);color:#fff}
+.hero .mut{color:#ffe2a8}
+.team{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px}
+.big{font-size:44px;font-weight:800;color:var(--gold);line-height:1.1}
+.mut{color:var(--mut);font-size:13px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.ht{display:flex;gap:8px;margin-top:10px}
+.ht div{flex:1;text-align:center;background:#ffffff22;border-radius:10px;padding:8px 4px;font-size:13px}
+.ht b{display:block;font-size:22px}
+.subj{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+.ico{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:28px;flex:none}
+.subj .t{flex:1}
+.subj b{font-size:17px}
+.rank{font-size:22px;font-weight:800;color:var(--g1)}
+.bar{height:6px;background:#eef;border-radius:3px;margin-top:6px;overflow:hidden}
+.bar div{height:100%;background:var(--gold)}
+.soon{opacity:.55}
+.tag{display:inline-block;font-size:11px;font-weight:800;border-radius:6px;padding:1px 6px;margin-left:4px}
+.tag.done{background:#d7f5e3;color:#0b6b3a}.tag.todo{background:#fde2e2;color:#c60b1e}.tag.boost{background:#fff1c2;color:#7a5a00}
+.hw{display:flex;align-items:center;gap:12px}
+.hw .ico{background:#fde68a}
+.btn{font:inherit;font-weight:800;border:none;border-radius:12px;padding:10px 14px;background:#e9eef6;color:#13213a;cursor:pointer}
+.btn.pri{background:var(--gold);color:#3a2a00}.btn.sm{padding:6px 10px;font-size:13px}
+.over{position:fixed;inset:0;background:#0c1b33dd;display:none;align-items:center;justify-content:center;z-index:9;padding:20px}
+.over.on{display:flex}.over .box{background:#fff;border-radius:18px;padding:20px;max-width:380px;width:100%;text-align:center}
+.pin{font:inherit;font-size:28px;letter-spacing:12px;text-align:center;width:180px;padding:8px;border:2px solid #ccd;border-radius:12px;margin:10px 0}
+.err{color:#c60b1e;font-size:13px;min-height:18px}
+.rules{color:#cfd8ea;font-size:12px;line-height:1.7}
+</style>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="theme-color" content="#0c1b33">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="学習スタジアム">
+</head>
+<body>
+<main>
+  <h1>⚽ ワールドカップ学習スタジアム</h1>
+  <div class="sub">算数・国語・英語の3つの大会で、世界一をめざせ！</div>
+
+  <div class="card hero">
+    <div class="team"><span id="crestBox"></span><span id="tname"></span></div>
+    <div class="row" style="margin-top:8px;align-items:flex-end">
+      <div><div class="mut">ワールドツアー総合ランキング</div><div class="big" id="total">-</div></div>
+      <div style="text-align:right"><div class="mut">総合ポイント</div><div style="font-weight:800;font-size:18px" id="tpts"></div></div>
+    </div>
+    <div class="ht">
+      <div>今日のハット<b id="htToday"></b></div>
+      <div>達成した日<b id="htDays"></b></div>
+      <div>連続<b id="streak"></b></div>
+    </div>
+  </div>
+
+  <div class="card" id="hwCard"></div>
+  <div id="subjects"></div>
+
+  <div class="rules">
+    <b>ルール</b><br>
+    ・学校と塾の宿題がおわったら、おうちの人にロックを解除してもらってからプレー。<br>
+    ・夜8時以降はおしまい。平日は1日60分まで（おうちの人がOKなら延長できるよ）。<br>
+    ・それぞれの大会は、自分のペースでランクが上がるよ。<br>
+    ・同じ日に全教科1試合ずつやると「ハットトリック」。総合ポイント +10！<br>
+    ・いちばんおくれている教科は、勝ったときのポイントが1.2倍（追い上げボーナス）。<br>
+    ・総合ランキングは、各教科のポイントの平均＋ハットトリックボーナスで決まるよ。<br>
+    ※ランキングはFIFA男子世界ランキング（2026年11月18日発表）をもとにしています。21位以下の一部は概算です。
+  </div>
+</main>
+<div class="over" id="over"><div class="box" id="overBox"></div></div>
+<script>
+/* ===== クラウド保存（アカウントにセーブを保管し、ブラウザの記録が消えても復元） ===== */
+(function(){
+ const KEYS=['calcWC_v1','kotobaWC_v1','eigoWC_v1','wcHub_v1'],TK='wcSyncT_v1';
+ const P=Storage.prototype,orig=P.setItem;let ready=false,timer=null,ref=null;
+ const getT=()=>{try{return JSON.parse(localStorage.getItem(TK))||{}}catch(e){return {}}};
+ const setT=t=>{try{orig.call(localStorage,TK,JSON.stringify(t))}catch(e){}};
+ P.setItem=function(k,v){orig.call(this,k,v);if(ready&&this===window.localStorage&&KEYS.includes(k)){const t=getT();t[k]=Date.now();setT(t);push()}};
+ function push(){clearTimeout(timer);timer=setTimeout(async()=>{if(!ref)return;try{const t=getT(),d={t:{}};KEYS.forEach(k=>{const v=localStorage.getItem(k);if(v!=null){d[k]=v;d.t[k]=t[k]||0}});await ref.set(d)}catch(e){}},1500)}
+ async function start(){
+  for(let i=0;i<100&&!(window.claude&&window.claude.use);i++)await new Promise(r=>setTimeout(r,100));
+  if(!(window.claude&&window.claude.use))return;
+  try{
+   const db=await window.claude.use('db'),user=await window.claude.use('user');if(!db||!user)return;
+   const id=await user.id();if(!id)return;
+   ref=db.doc('data/users/'+id+'/save');
+   const snap=await ref.get();const rd=snap&&(typeof snap.data==='function'?snap.data():(snap.data||snap))||null;
+   const t=getT();let restored=false,needPush=false;
+   KEYS.forEach(k=>{const rt=rd&&rd.t&&rd.t[k]||0,lt=t[k]||0,rv=rd&&rd[k];
+    if(rv!=null&&rt>lt){orig.call(localStorage,k,rv);t[k]=rt;restored=true}
+    else if(localStorage.getItem(k)!=null&&(lt>rt||rv==null)){if(!t[k])t[k]=Date.now();needPush=true}});
+   setT(t);ready=true;
+   if(restored&&typeof window.onSyncRestored==='function')window.onSyncRestored();
+   if(needPush)push();
+  }catch(e){ready=true}
+ }
+ start();
+})();
+
+const TEAMS=[
+["スペイン","🇪🇸",2004.48],["アルゼンチン","🇦🇷",1964.95],["フランス","🇫🇷",1950.82],["イングランド","🏴󠁧󠁢󠁥󠁮󠁧󠁿",1938.90],
+["モロッコ","🇲🇦",1809.37],["ポルトガル","🇵🇹",1800.10],["ブラジル","🇧🇷",1796.80],["ベルギー","🇧🇪",1790.37],
+["オランダ","🇳🇱",1782.43],["コロンビア","🇨🇴",1735.90],["ドイツ","🇩🇪",1730.50],["スイス","🇨🇭",1724.00],
+["メキシコ","🇲🇽",1723.64],["イタリア","🇮🇹",1717.20],["クロアチア","🇭🇷",1714.22],["アメリカ","🇺🇸",1713.56],
+["日本","🇯🇵",1684.61],["セネガル","🇸🇳",1648.84],["ノルウェー","🇳🇴",1643.59],["ウルグアイ","🇺🇾",1640.00],
+["デンマーク","🇩🇰",1629.71],["オーストリア","🇦🇹",1605.90],["イラン","🇮🇷",1599.43],["エクアドル","🇪🇨",1590.74],
+["カナダ","🇨🇦",1588.00],["エジプト","🇪🇬",1585.86],["オーストラリア","🇦🇺",1584.00],["アルジェリア","🇩🇿",1574.77],
+["コートジボワール","🇨🇮",1569.32],["韓国","🇰🇷",1567.00],["ナイジェリア","🇳🇬",1563.00],["トルコ","🇹🇷",1556.22],
+["パラグアイ","🇵🇾",1553.60],["スウェーデン","🇸🇪",1549.68],["ウクライナ","🇺🇦",1525.65],["ハンガリー","🇭🇺",1516.43],
+["コンゴ民主共和国","🇨🇩",1506.37],["ポーランド","🇵🇱",1505.86],["ウェールズ","🏴󠁧󠁢󠁷󠁬󠁳󠁿",1504.67],["ギリシャ","🇬🇷",1494.89],
+["スコットランド","🏴󠁧󠁢󠁳󠁣󠁴󠁿",1489.20],["カメルーン","🇨🇲",1485.30],["パナマ","🇵🇦",1481.68],["セルビア","🇷🇸",1477.92],
+["マリ","🇲🇱",1474.14],["スロバキア","🇸🇰",1473.06],["南アフリカ","🇿🇦",1468.88],["ベネズエラ","🇻🇪",1465.87],
+["チリ","🇨🇱",1456.40]
+].map(([name,flag,pts])=>({name,flag,pts}));
+const DEF_CREST={c1:'#1d4ed8',c2:'#ffffff',txt:'AFC'};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function sharedCrest(){try{const k=JSON.parse(localStorage.getItem('kotobaWC_v1'));if(k&&k.crest)return k.crest}catch(e){}return DEF_CREST}
+function crest(sz=40,c){c=c||sharedCrest();const t=esc(c.txt||'');const fs=[...(c.txt||'')].length>=3?10:13;
+ return `<svg width="${sz}" height="${Math.round(sz*1.15)}" viewBox="0 0 40 46" aria-hidden="true"><path d="M4 3h32v20c0 11-7 18-16 21C11 41 4 34 4 23z" fill="${c.c1}" stroke="#0005" stroke-width="2.5"/><path d="M4 3h32v20c0 11-7 18-16 21C11 41 4 34 4 23z" fill="none" stroke="${c.c2}" stroke-width="1.2"/><path d="M8 7h24v16c0 8-5 13.5-12 16-7-2.5-12-8-12-16z" fill="none" stroke="${c.c2}" stroke-width="1.2"/><text x="20" y="26.5" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="${fs}" fill="${c.c2}">${t}</text></svg>`}
+
+const START=1440, HT_BONUS=10;
+const SUBJ=[
+ {id:'sansu',name:'算数',title:'けいさんワールドカップ',icon:'🔢',bg:'#ffe08a',key:'calcWC_v1',href:'sansu/index.html',stages:22,ready:true},
+ {id:'kokugo',name:'国語',title:'ことばワールドカップ',icon:'📖',bg:'#cfe3ff',key:'kotobaWC_v1',href:'kokugo/index.html',stages:16,ready:true},
+ {id:'eigo',name:'英語',title:'えいごワールドカップ',icon:'🔤',bg:'#d9f5e3',key:'eigoWC_v1',href:'eigo/index.html',stages:22,ready:true}
+];
+const get=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
+const dstr=d=>`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+const rankOf=p=>1+TEAMS.filter(t=>t.pts>p).length;
+function render(){
+  const hub=get('wcHub_v1')||{days:{}};
+  const ready=SUBJ.filter(s=>s.ready);
+  const data=Object.fromEntries(SUBJ.map(s=>{const d=get(s.key);return [s.id,{pts:d&&typeof d.pts==='number'?d.pts:START,cleared:d&&d.cleared?Object.keys(d.cleared).length:0,name:d&&d.name}]}));
+  const htDayList=Object.keys(hub.days).filter(k=>ready.every(s=>hub.days[k][s.id]));
+  const avg=ready.reduce((a,s)=>a+data[s.id].pts,0)/ready.length;
+  const tp=avg+HT_BONUS*htDayList.length;
+  const today=dstr(new Date());
+  const tday=hub.days[today]||{};
+  // streak: 何か1教科でもやった日の連続
+  let st=0;const d=new Date();if(!hub.days[dstr(d)])d.setDate(d.getDate()-1);
+  while(hub.days[dstr(d)]){st++;d.setDate(d.getDate()-1)}
+  const minPts=Math.min(...ready.map(s=>data[s.id].pts));
+  crestBox.innerHTML=crest(36);
+  tname.textContent=(data.sansu.name&&data.sansu.name!=='ヤマルキッズ'?data.sansu.name:'')||data.kokugo.name||'あざみ野FC';
+  total.textContent=rankOf(tp)+'位';tpts.textContent=tp.toFixed(1)+' pt';
+  htToday.textContent=ready.every(s=>tday[s.id])?'達成！':`${ready.filter(s=>tday[s.id]).length}/${ready.length}`;
+  htDays.textContent=htDayList.length+'日';streak.textContent=st+'日';
+  subjects.innerHTML=SUBJ.map(s=>{
+    if(!s.ready)return `<div class="card soon"><div class="subj"><div class="ico" style="background:${s.bg}">${s.icon}</div><div class="t"><b>${s.name}</b><div class="mut">${s.title}・準備中</div></div></div></div>`;
+    const x=data[s.id],behind=ready.length>1&&ready.filter(o=>o!==s).every(o=>data[o.id].pts>x.pts);
+    return `<a class="card subj" href="${s.href}"><div class="ico" style="background:${s.bg}">${s.icon}</div><div class="t"><b>${s.name}</b>${tday[s.id]?'<span class="tag done">今日やった</span>':'<span class="tag todo">まだ</span>'}${behind?'<span class="tag boost">🚀追い上げ×1.2</span>':''}<div class="mut">${s.title}</div><div class="bar"><div style="width:${x.cleared/s.stages*100}%"></div></div><div class="mut" style="margin-top:3px">ステージ ${x.cleared}/${s.stages}</div></div><div style="text-align:right"><div class="rank">${rankOf(x.pts)}位</div><div class="mut">${x.pts.toFixed(0)}pt</div></div></a>`;
+  }).join('');
+}
+/* ===== 宿題チェック（保護者ロック） ===== */
+const getHub=()=>get('wcHub_v1')||{days:{}};
+const putHub=h=>{try{localStorage.setItem('wcHub_v1',JSON.stringify(h))}catch(e){}};
+function overlay(h){overBox.innerHTML=h;over.classList.add('on');const i=overBox.querySelector('input');i&&setTimeout(()=>i.focus(),50)}
+function closeOver(){over.classList.remove('on')}
+const pinInput=`<input class="pin" id="pinIn" type="password" inputmode="numeric" maxlength="4" autocomplete="off"><div class="err" id="pinErr"></div>`;
+function renderHW(){
+  const h=getHub(),t=dstr(new Date()),d=new Date(),ext=(h.ext&&h.ext[t])||{};
+  const hwDone=h.lockOn===false||(h.unlock&&h.unlock[t]);
+  const wd=d.getDay()>=1&&d.getDay()<=5,used=Math.round((h.mins&&h.mins[t])||0),cap=60+(ext.min||0),night=ext.night||20;
+  const nightNow=d.getHours()>=night||d.getHours()<5,timeOver=wd&&used>=cap;
+  let head=!hwDone?'🔒 学校と塾の宿題がおわったら':nightNow?'🌙 今日はおしまい（夜'+night+'時まで）':timeOver?'⏱️ 今日の60分をつかいきったよ':'✅ プレーOK！';
+  hwCard.innerHTML=`<div class="hw"><div class="ico">📚</div><div style="flex:1"><b>${head}</b>
+   <div class="mut">宿題 ${hwDone?'✅':'まだ'}　・　${wd?`今日 ${used}分 / ${cap}分`:`今日 ${used}分（休日）`}　・　夜${night}時まで</div></div>
+   <div style="display:flex;flex-direction:column;gap:6px">${!hwDone?'<button class="btn pri sm" onclick="askUnlock()">解除</button>':''}<button class="btn sm" onclick="askSettings()">おうちの人</button></div></div>`;
+}
+function needPin(next,title){
+  const h=getHub();
+  if(!h.pin){overlay(`<h3 style="margin:0">おうちの人へ</h3><p class="mut">はじめに、宿題ロックを解除する4けたの暗証番号を決めてください（お子さんに見られないように）。</p>${pinInput}<div><button class="btn pri" onclick="setPin()">決定</button> <button class="btn" onclick="closeOver()">やめる</button></div>`);window._next=next;return}
+  overlay(`<h3 style="margin:0">${title}</h3><p class="mut">おうちの人の暗証番号（4けた）</p>${pinInput}<div><button class="btn pri" onclick="checkPin()">OK</button> <button class="btn" onclick="closeOver()">やめる</button></div>`);window._next=next;
+}
+function setPin(){const v=pinIn.value;if(!/^\d{4}$/.test(v)){pinErr.textContent='4けたの数字で入力してください';return}const h=getHub();h.pin=v;putHub(h);closeOver();window._next&&window._next()}
+function checkPin(){if(pinIn.value!==getHub().pin){pinErr.textContent='番号がちがいます';pinIn.value='';return}closeOver();window._next&&window._next()}
+function askUnlock(){needPin(()=>{const h=getHub();h.unlock=h.unlock||{};h.unlock[dstr(new Date())]=true;putHub(h);renderHW();overlay(`<div style="font-size:44px">✅</div><h3>ロック解除！</h3><p class="mut">宿題おつかれさま。今日の試合を楽しもう！</p><button class="btn pri" onclick="closeOver()">OK</button>`)},'宿題チェック')}
+function askSettings(){needPin(parentMenu,'おうちの人メニュー')}
+function parentMenu(){const h=getHub();overlay(`<h3 style="margin:0 0 10px">おうちの人メニュー</h3><div style="display:flex;flex-direction:column;gap:8px">
+ <button class="btn" onclick="extend('min')">⏱️ 今日のプレー時間を +30分</button>
+ <button class="btn" onclick="extend('night')">🌙 今夜だけ 21時まで延長</button>
+ <button class="btn" onclick="showLog()">📊 プレー記録を見る</button>
+ <button class="btn" onclick="showTransfer()">🔁 データ引き継ぎ（アプリへの移行）</button>
+ <button class="btn" onclick="toggleLock()">${h.lockOn===false?'宿題ロックをオンにする':'宿題ロックをオフにする（休みの日など）'}</button>
+ <button class="btn" onclick="changePin()">暗証番号を変える</button>
+ <button class="btn pri" onclick="closeOver()">とじる</button></div>`)}
+function extend(k){const h=getHub(),t=dstr(new Date());h.ext=h.ext||{};const e=h.ext[t]=h.ext[t]||{};if(k==='min')e.min=(e.min||0)+30;else e.night=21;putHub(h);renderHW();overlay(`<div style="font-size:40px">👍</div><h3>${k==='min'?`今日のプレー時間を ${60+e.min}分 にしました`:'今夜は21時までOKにしました'}</h3><button class="btn pri" onclick="parentMenu()">もどる</button>`)}
+function logRows(){
+  const L=get('wcLog_v1')||[],cut=Date.now()-14*864e5,agg={};
+  L.filter(e=>new Date(e.at).getTime()>=cut).forEach(e=>{const k=e.app+'|'+e.stageName;const a=agg[k]=agg[k]||{app:e.app,name:e.stageName,n:0,q:0,ok:0,sec:0};a.n++;a.q+=e.res.length;a.ok+=[...e.res].filter(x=>x==='1').length;a.sec+=e.secs.reduce((x,y)=>x+y,0)});
+  return Object.values(agg);
+}
+function showLog(){
+  const L=get('wcLog_v1')||[],rows=logRows(),nm={sansu:'算数',kokugo:'国語',eigo:'英語'};
+  const tb=rows.map(a=>`<tr><td>${nm[a.app]}</td><td style="text-align:left">${a.name}</td><td>${a.n}</td><td>${a.q?Math.round(a.ok/a.q*100):0}%</td><td>${a.q?(a.sec/a.q).toFixed(1):'-'}</td></tr>`).join('');
+  overlay(`<h3 style="margin:0">プレー記録（直近14日）</h3><div style="max-height:50vh;overflow:auto;margin:8px 0"><table style="width:100%;font-size:12px;border-collapse:collapse;text-align:center"><tr style="color:#6b778c"><td>教科</td><td>ステージ</td><td>試合</td><td>正答率</td><td>秒/問</td></tr>${tb||'<tr><td colspan=5>まだ記録がありません</td></tr>'}</table></div>
+  <p class="mut" style="font-size:11px">全${L.length}試合を記録中。Claudeにも自動で届くので「ログを見て調整して」と頼めます。</p><div class="err" id="cpMsg"></div>
+  <div style="display:flex;gap:8px;justify-content:center"><button class="btn" onclick="copyLog()">記録をコピー</button><button class="btn pri" onclick="parentMenu()">もどる</button></div>`)}
+const TKEYS=['calcWC_v1','kotobaWC_v1','eigoWC_v1','wcHub_v1','wcLog_v1'];
+function showTransfer(){overlay(`<h3 style="margin:0">データ引き継ぎ</h3><p class="mut" style="text-align:left">① 今まで遊んでいた画面で「コードをコピー」<br>② 新しいアプリの同じ画面で、下のらんに貼り付けて「読み込む」</p>
+ <button class="btn pri" onclick="copyTransfer()" style="width:100%">① 引き継ぎコードをコピー</button><div class="err" id="tMsg"></div>
+ <textarea id="tIn" placeholder="ここに引き継ぎコードを貼り付け" style="width:100%;height:80px;font-size:12px;border:2px solid #ccd;border-radius:10px;padding:6px"></textarea>
+ <div style="display:flex;gap:8px;justify-content:center;margin-top:8px"><button class="btn" onclick="importTransfer()">② 読み込む</button><button class="btn" onclick="parentMenu()">もどる</button></div>`)}
+function copyTransfer(){const d={v:1,at:Date.now()};TKEYS.forEach(k=>{const v=localStorage.getItem(k);if(v!=null)d[k]=v});const code='WCS1:'+btoa(unescape(encodeURIComponent(JSON.stringify(d))));
+ try{navigator.clipboard.writeText(code).then(()=>tMsg.textContent='コピーしました。新しいアプリに貼り付けてください',()=>{tIn.value=code;tMsg.textContent='自動コピーできないので、下のコードを全部選んでコピーしてください'})}catch(e){tIn.value=code;tMsg.textContent='下のコードを全部選んでコピーしてください'}}
+function importTransfer(){try{const c=tIn.value.trim();if(!c.startsWith('WCS1:'))throw 0;const d=JSON.parse(decodeURIComponent(escape(atob(c.slice(5)))));TKEYS.forEach(k=>{if(d[k]!=null)localStorage.setItem(k,d[k])});render();renderHW();overlay(`<div style="font-size:40px">✅</div><h3>引き継ぎ完了！</h3><p class="mut">これまでの記録を読み込みました。</p><button class="btn pri" onclick="closeOver()">OK</button>`)}catch(e){tMsg.textContent='コードが正しくありません。もう一度コピーしてください'}}
+function copyLog(){const L=get('wcLog_v1')||[];const head='日時,教科,ステージ,第何戦,相手,相手順位,レベル,実効レベル,得点,失点,正誤,秒数,まちがい';const csv=[head].concat(L.map(e=>[e.at,e.app,e.stageName,e.leg,e.opp,e.orank,e.lv,e.eff,e.my,e.op,e.res,(e.secs||[]).join(' '),(e.missed||[]).join(' / ')].map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(','))).join('\n');
+  try{navigator.clipboard.writeText(csv).then(()=>cpMsg.textContent='コピーしました',()=>cpMsg.textContent='コピーできませんでした')}catch(e){cpMsg.textContent='コピーできませんでした'}}
+function toggleLock(){const h=getHub();h.lockOn=h.lockOn===false?true:false;putHub(h);renderHW();parentMenu()}
+function changePin(){const h=getHub();delete h.pin;putHub(h);needPin(()=>{renderHW()},'')}
+over.addEventListener('keydown',e=>{if(e.key==='Enter'){const b=overBox.querySelector('.btn.pri');b&&b.click()}});
+render();renderHW();
+window.addEventListener('pageshow',()=>{render();renderHW()});
+window.onSyncRestored=()=>{render();renderHW()};
+</script>
+<script>if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
+</body>
+</html>
