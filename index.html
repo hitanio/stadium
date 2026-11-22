@@ -224,6 +224,7 @@ function copyLog(){const L=get('wcLog_v1')||[];const head='日時,教科,ステ�
 function toggleLock(){const h=getHub();h.lockOn=h.lockOn===false?true:false;putHub(h);renderHW();parentMenu()}
 function changePin(){const h=getHub();delete h.pin;putHub(h);needPin(()=>{renderHW()},'')}
 over.addEventListener('keydown',e=>{if(e.key==='Enter'){const b=overBox.querySelector('.btn.pri');b&&b.click()}});
+{const h=getHub();if(!h.seedV2){h.days=h.days||{};const t='2026-11-22';h.days[t]={...(h.days[t]||{}),sansu:true,kokugo:true,eigo:true};h.seedV2=true;putHub(h)}}
 render();renderHW();
 window.addEventListener('pageshow',()=>{render();renderHW()});
 window.onSyncRestored=()=>{render();renderHW()};

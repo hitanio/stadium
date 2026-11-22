@@ -1159,7 +1159,10 @@ function finish(){
   resBox.innerHTML=h;M=null;show('result');
 }
 
-load();renderHome();
+load();
+/* 2026/11/22 時点の記録を反映（1回だけ） */
+if(!S.seedV2){S.pts=Math.max(S.pts,1465.6);S.cleared=S.cleared||{};for(let i=0;i<1;i++)S.cleared[i]=true;S.seedV2=true;save()}
+renderHome();
 window.onSyncRestored=()=>{if(!M){load();renderHome()}};
 </script>
 <script>if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('../sw.js').catch(()=>{}));</script>
